@@ -4,6 +4,6 @@ with open('input.txt', 'r') as file:
 sum = 0
 
 for line in data: 
-  sum += ((int(line)) // 3) - 2
+  sum += int(line) // 3 - 2
 
 print(sum)
