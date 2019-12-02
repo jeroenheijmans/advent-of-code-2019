@@ -11,8 +11,8 @@ Yeah, nothing fancy; I'm learning Python while doing AoC this year.
 
 Here are the lessons learned for each day:
 
-1. TODO
-2. TODO
+1. You snooze, you loose.
+2. Working without unit tests feels uncomfortable.
 3. TODO
 4. TODO
 5. TODO
