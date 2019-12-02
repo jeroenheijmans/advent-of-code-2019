@@ -4,10 +4,9 @@ with open('input.txt', 'r') as file:
 def solve(input):
 
   for noun in range(0, 100):
-    print(noun)
     for verb in range(0, 100):
       program = input.copy()
-      
+
       program[1] = noun
       program[2] = verb
 

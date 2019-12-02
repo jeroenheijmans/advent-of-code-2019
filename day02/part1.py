@@ -9,14 +9,12 @@ def solve(program):
 
   while True:
     if program[i] == 1:
-      #print('add', program[program[i+3]], program[program[i+2]] , program[program[i+1]])
       program[program[i+3]] = program[program[i+2]] + program[program[i+1]]
+      i += 4
     elif program[i] == 2:
-      #print('mul', program[program[i+3]], program[program[i+2]] , program[program[i+1]])
       program[program[i+3]] = program[program[i+2]] * program[program[i+1]]
+      i += 4
     elif program[i] == 99:
       return program[0]
-
-    i += 4
 
 print(solve(data))
