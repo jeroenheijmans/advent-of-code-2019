@@ -13,11 +13,11 @@ def lineToTupleSet(line):
       if direction == "R": x += 1
       if direction == "D": y += 1
       if direction == "L": x -= 1
-      points.add(tuple([x, y]))
+      points.add((x, y))
   return points
 
-def distance(p1):
-  return abs(p1[0]) + abs(p1[1])
+def distance(p1, p2 = (0, 0)):
+  return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
 
 def solve(input):
   points1 = lineToTupleSet(input[0])

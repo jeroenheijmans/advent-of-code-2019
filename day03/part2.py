@@ -15,22 +15,14 @@ def lineToTupleSet(line):
       if direction == "R": x += 1
       if direction == "D": y += 1
       if direction == "L": x -= 1
-      point = tuple([x, y])
-      if point not in points:
-        points[point] = cost
+      if (x, y) not in points:
+        points[(x, y)] = cost
   return points
-
-def distance(p1):
-  return abs(p1[0]) + abs(p1[1])
 
 def solve(input):
   points1 = lineToTupleSet(input[0])
   points2 = lineToTupleSet(input[1])
   crossings = set(points1.keys()).intersection(set(points2.keys()))
-  lowestCost = 10000000
-  for p in crossings:
-    cost = points1[p] + points2[p]
-    lowestCost = min([lowestCost, cost])
-  return lowestCost
+  return min(map(lambda p: points1[p] + points2[p], crossings))
 
 print(solve(data))
