@@ -13,7 +13,7 @@ Here are the lessons learned for each day:
 
 1. You snooze, you loose.
 2. Working without unit tests feels uncomfortable.
-3. TODO
+3. AoC is indeed perfect for learning language basics.
 4. TODO
 5. TODO
 6. TODO
