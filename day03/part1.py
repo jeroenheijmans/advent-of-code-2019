@@ -22,7 +22,7 @@ def distance(p1, p2 = (0, 0)):
 def solve(input):
   points1 = lineToTupleSet(input[0])
   points2 = lineToTupleSet(input[1])
-  crossings = points1.intersection(points2)
+  crossings = points1 & points2
   return min(map(distance, crossings))
 
 print(solve(data))

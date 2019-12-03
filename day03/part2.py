@@ -22,7 +22,7 @@ def lineToTupleSet(line):
 def solve(input):
   points1 = lineToTupleSet(input[0])
   points2 = lineToTupleSet(input[1])
-  crossings = set(points1.keys()).intersection(set(points2.keys()))
+  crossings = set(points1.keys()) & set(points2.keys())
   return min(map(lambda p: points1[p] + points2[p], crossings))
 
 print(solve(data))
