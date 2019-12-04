@@ -9,17 +9,18 @@ def solve(input):
 
   for x in range(lower, upper + 1):
     candidate = str(x)
-    okay = True
+    twosame = False
+    increases = True
     for i in range(len(candidate) - 1):
       if candidate[i] == candidate[i + 1]:
-        okay = False
+        twosame = True
         break
       if candidate[i] > candidate[i + 1]:
-        okay = False
-        break
-    if okay: n += 1
+        increases = False
+    if twosame and increases: n += 1
 
   return n
 
 # Not 8
+# Not 78876
 print(solve(data))
