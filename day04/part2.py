@@ -9,17 +9,15 @@ def solve(input):
     candidate = str(x)
     twosame = False
     increases = True
-    prev = candidate[0]
-    samecount = 0
+    length = len(candidate)
     
-    for i in range(1, len(candidate)):
-      if candidate[i] != prev:
-        if samecount == 1: twosame = True
-        samecount = 0
-        prev = candidate[i]
-
-      if candidate[i] == prev:
-        samecount += 1
+    for i in range(1, length):
+      if candidate[i] == candidate[i - 1]:
+        # maybe twosame...
+        invalid1 = i > 1 and candidate[i] == candidate[i - 2]
+        invalid2 = i < length - 1 and candidate[i] == candidate[i + 1]
+        if not invalid1 and not invalid2:
+          twosame = True
         
       if candidate[i] < candidate[i - 1]:
         increases = False
