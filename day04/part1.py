@@ -7,11 +7,11 @@ def solve(input):
   upper = int(data[1])
   n = 0
 
-  for x in range(lower, upper + 1):
+  for x in range(lower, upper):
     candidate = str(x)
     twosame = False
     increases = True
-    for i in range(len(candidate) - 1):
+    for i in range(len(candidate) - 2):
       if candidate[i] == candidate[i + 1]:
         twosame = True
         break
@@ -23,4 +23,5 @@ def solve(input):
 
 # Not 8
 # Not 78876
+# Not 78850
 print(solve(data))
