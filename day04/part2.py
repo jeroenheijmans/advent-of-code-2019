@@ -9,7 +9,6 @@ def solve(input):
     candidate = str(x)
     twosame = False
     increases = True
-    nogroups = True
     prev = candidate[0]
     samecount = 0
     
@@ -17,6 +16,7 @@ def solve(input):
       if candidate[i] != prev:
         if samecount == 1: twosame = True
         samecount = 0
+        prev = candidate[i]
 
       if candidate[i] == prev:
         samecount += 1
@@ -25,8 +25,7 @@ def solve(input):
         increases = False
         break
 
-    if twosame and increases and nogroups:
-      
+    if twosame and increases:
       n += 1
 
   return n
