@@ -11,17 +11,20 @@ def solve(input):
     candidate = str(x)
     twosame = False
     increases = True
-    for i in range(len(candidate) - 2):
-      if candidate[i] == candidate[i + 1]:
+    for i in range(1, len(candidate) - 1):
+      if candidate[i] == candidate[i - 1]:
         twosame = True
-        break
-      if candidate[i] > candidate[i + 1]:
+      if candidate[i] < candidate[i - 1]:
         increases = False
-    if twosame and increases: n += 1
+        break
+    if twosame and increases:
+      print(candidate)
+      n += 1
 
   return n
 
 # Not 8
 # Not 78876
 # Not 78850
+# Not 4980
 print(solve(data))
