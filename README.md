@@ -14,8 +14,8 @@ Here are the lessons learned for each day:
 1. You snooze, you loose.
 2. Working without unit tests feels uncomfortable.
 3. AoC is indeed perfect for learning language basics.
-4. TODO
-5. TODO
+4. Knowing modern language's base libraries is key.
+5. Programming is more reading than writing.
 6. TODO
 7. TODO
 8. TODO
