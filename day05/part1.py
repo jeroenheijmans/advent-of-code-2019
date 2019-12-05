@@ -4,10 +4,11 @@ with open('input.txt', 'r') as file:
   data = list(map(int, file.read().splitlines()[0].split(",")))
 
 def solve(program, input):
+  output = 'none'
   counter = 0
   i = 0
 
-  while True and counter < 10000:
+  while True: # safety... and counter < 10000:
     counter += 1
 
     opcode = program[i] % 100
@@ -40,7 +41,7 @@ def solve(program, input):
     # out
     elif opcode == 4:
       param1 = program[i+1] if mode1 == 1 else program[program[i+1]]
-      print(program[i], 'out', param1)
+      output = param1
       i += 2
 
     elif opcode == 99:
@@ -50,7 +51,7 @@ def solve(program, input):
     else:
       raise ValueError(f'opcode {opcode} from {program[i]}')
   
-  return -1
+  return output
 
 input = 1
 print(solve(data, input))
