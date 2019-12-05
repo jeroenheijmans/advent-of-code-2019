@@ -44,6 +44,41 @@ def solve(program, input):
       output = param1
       i += 2
 
+    # jump-if-true
+    elif opcode == 5:
+      param1 = program[i+1] if mode1 == 1 else program[program[i+1]]
+      param2 = program[i+2] if mode2 == 1 else program[program[i+2]]
+      if param1 != 0:
+        i = param2
+      else:
+        i += 3
+
+    # jump-if-false
+    elif opcode == 6:
+      param1 = program[i+1] if mode1 == 1 else program[program[i+1]]
+      param2 = program[i+2] if mode2 == 1 else program[program[i+2]]
+      if param1 == 0:
+        i = param2
+      else:
+        i += 3
+
+    # less-than
+    elif opcode == 7:
+      param1 = program[i+1] if mode1 == 1 else program[program[i+1]]
+      param2 = program[i+2] if mode2 == 1 else program[program[i+2]]
+      param3 = program[i+3]
+      program[param3] = 1 if param1 < param2 else 0
+      i += 4
+
+    # equals
+    elif opcode == 8:
+      param1 = program[i+1] if mode1 == 1 else program[program[i+1]]
+      param2 = program[i+2] if mode2 == 1 else program[program[i+2]]
+      param3 = program[i+3]
+      program[param3] = 1 if param1 == param2 else 0
+      i += 4
+
+
     elif opcode == 99:
       print(program[i], 'halt')
       break
@@ -53,5 +88,5 @@ def solve(program, input):
   
   return output
 
-input = 1
-print(solve(data, input))
+# print('part1', solve(data, 1))
+print('part2', solve(data, 5))
