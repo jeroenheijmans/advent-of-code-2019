@@ -16,7 +16,7 @@ Here are the lessons learned for each day:
 3. AoC is indeed perfect for learning language basics.
 4. Knowing modern language's base libraries is key.
 5. Programming is more reading than writing.
-6. TODO
+6. Don't climb to learning curves at the same time.
 7. TODO
 8. TODO
 9. TODO
