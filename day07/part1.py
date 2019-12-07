@@ -1,4 +1,5 @@
 import itertools
+import collections
 
 with open('input.txt', 'r') as file:
   data = list(map(int, file.read().splitlines()[0].split(",")))
@@ -68,12 +69,16 @@ def runComputer(data, phase, input):
   return output
 
 def solve(input):
+  results = collections.OrderedDict()
+
   for seq in itertools.permutations(range(5), 5):
     amplification = 0
     for phase in seq:
       amplification = runComputer(data, phase, amplification)
+    results[seq] = amplification
 
-  return amplification
+  # for x in results: print(x, results[x])
 
-# Not: 8808
+  return max(results.values())
+
 print(solve(data))
