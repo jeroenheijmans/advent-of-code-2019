@@ -79,8 +79,8 @@ def runComputer(program, i, input):
 def solve(input):
   results = collections.OrderedDict()
 
-  for seq in [(9,8,7,6,5)]: # itertools.permutations(range(5, 10), 5):
-  # for seq in itertools.permutations(range(5, 10), 5):
+  # for seq in [(9,7,8,5,6)]: # itertools.permutations(range(5, 10), 5):
+  for seq in itertools.permutations(range(5, 10), 5):
     # print('trying seq', seq)
 
     computers = list()
@@ -90,22 +90,25 @@ def solve(input):
       _output = computer.run(phase) # initialize with phase
       computers.append(computer)
 
-    amplification = 0
+    computers[4].lastOutput = 0 # simulate that E gives A 0 the first time
     running = True
 
     while running:
-      for computer in computers:
-        amplification = computer.run(amplification)
-        if amplification is None:
-          running = False
-          break
-      print('looping with', amplification)
-    
-    results[seq] = computers[4].lastOutput
+      running = False
+      for n in range(0, 5):
+        if computers[n].halted: continue
+        input = computers[(n - 1 + 5) % 5].lastOutput
+        # print(n, input)
+        computers[n].run(input)
+        running = True
+      if not computers[4].halted:
+        results[seq] = computers[4].lastOutput
 
-  for x in results: print(x, results[x])
+    # for c in computers: print(c.halted)
+
+  # for x in results: print(x, results[x])
 
   maxKey = max(results.keys(), key=(lambda k: results[k]))
-  return maxKey, results[maxKey]
+  return maxKey, results[maxKey], 'and', (9,7,8,5,6), results[(9,7,8,5,6)]
 
 print(solve(data))
