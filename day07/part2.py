@@ -5,27 +5,30 @@ with open('input.txt', 'r') as file:
   data = list(map(int, file.read().splitlines()[0].split(",")))
 
 class Computer:
-  def __init__(self, program):
+  def __init__(self, program, phase):
     self.i = 0
     self.lastOutput = None
     self.halted = False
+    self.phase = phase
+    self.hasUsedPhase = False
     self.program = program.copy()
 
   def run(self, input):
     if self.halted:
       raise RuntimeError("Computer was halted already")
-    i, output = runComputer(self.program, self.i, input)
+    i, output, hasUsedPhase = runComputer(self.program, self.i, input, self.phase, self.hasUsedPhase)
     self.i = i
     self.halted = self.halted or output is None
     self.lastOutput = output
+    self.hasUsedPhase = hasUsedPhase
     return output
 
-def runComputer(program, i, input):
+def runComputer(program, i, input, phase, hasUsedPhase):
   while True:
     opcode = program[i] % 100
 
     if opcode == 99:
-      return (i, None)
+      return (i, None, True)
 
     mode1 = (program[i] - opcode) // 100 % 10
     mode2 = (program[i] - opcode) // 1000 % 10
@@ -47,13 +50,14 @@ def runComputer(program, i, input):
     
     elif opcode == 3: # mov
       param1 = program[i+1]
-      program[param1] = input
+      program[param1] = input if hasUsedPhase else phase
+      hasUsedPhase = True
       i += 2
 
     elif opcode == 4: # out
       output = param1
       i += 2
-      return (i, output)
+      return (i, output, hasUsedPhase)
 
     elif opcode == 5: # jump-if-true
       i = param2 if param1 != 0 else i+3
@@ -79,15 +83,11 @@ def runComputer(program, i, input):
 def solve(input):
   results = collections.OrderedDict()
 
-  # for seq in [(9,7,8,5,6)]: # itertools.permutations(range(5, 10), 5):
   for seq in itertools.permutations(range(5, 10), 5):
-    # print('trying seq', seq)
-
     computers = list()
 
     for phase in seq:
-      computer = Computer(data)
-      _output = computer.run(phase) # initialize with phase
+      computer = Computer(data, phase)
       computers.append(computer)
 
     computers[4].lastOutput = 0 # simulate that E gives A 0 the first time
@@ -97,8 +97,8 @@ def solve(input):
       running = False
       for n in range(0, 5):
         if computers[n].halted: continue
-        input = computers[(n - 1 + 5) % 5].lastOutput
-        # print(n, input)
+        x = n - 1 if n > 0 else 4
+        input = computers[x].lastOutput
         computers[n].run(input)
         running = True
       if not computers[4].halted:
@@ -109,6 +109,6 @@ def solve(input):
   # for x in results: print(x, results[x])
 
   maxKey = max(results.keys(), key=(lambda k: results[k]))
-  return maxKey, results[maxKey], 'and', (9,7,8,5,6), results[(9,7,8,5,6)]
+  return maxKey, results[maxKey]
 
 print(solve(data))
