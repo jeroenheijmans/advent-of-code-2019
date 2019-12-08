@@ -2,8 +2,7 @@ with open('input.txt', 'r') as file:
   data = list(map(int, file.read().splitlines()[0]))
 
 def solve(data):
-  width = 25
-  height = 6
+  width, height = 25, 6
   i = 0
   matrix = [[2 for x in range(height)] for y in range(width)]
 

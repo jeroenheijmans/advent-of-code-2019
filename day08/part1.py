@@ -4,8 +4,7 @@ with open('input.txt', 'r') as file:
   data = list(map(int, file.read().splitlines()[0]))
 
 def solve(data):
-  width = 25
-  height = 6
+  width, height = 25, 6
   i = 0
   checksums = {}
 
@@ -16,6 +15,6 @@ def solve(data):
       i += 1
     checksums[colors[0]] = colors[1] * colors[2]
 
-  return checksums[sorted(checksums.keys())[0]]
+  return checksums[min(checksums.keys())]
 
 print(solve(data))
