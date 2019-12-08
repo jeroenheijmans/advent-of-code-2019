@@ -8,21 +8,25 @@ def solve(data):
   nr = len(data) // size
   i = 0
   lowest = None
+  minZeros = None
 
   for layer in range(nr):
     nr1 = 0
     nr2 = 0
+    zeros = 0
     for _ in range(size):
+      if data[i] == 0: zeros += 1
       if data[i] == 1: nr1 += 1
       if data[i] == 2: nr2 += 1
       i += 1
 
     checksum = nr1 * nr2
-    lowest = checksum if lowest is None else min(lowest, checksum)
-    print(layer, checksum)
+    if minZeros is None or zeros < minZeros:
+      lowest = checksum
+      minZeros = zeros
+      print(i, layer, checksum)
     
 
   return 'found', lowest
 
-# no 774
 print(solve(data))
