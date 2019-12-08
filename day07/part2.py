@@ -33,23 +33,19 @@ def runComputer(program, i, input, phase, hasUsedPhase):
     mode1 = (program[i] - opcode) // 100 % 10
     mode2 = (program[i] - opcode) // 1000 % 10
 
-    param1 = program[i+1] if mode1 == 1 else program[program[i+1]]
+    param1 = program[i+1] if mode1 == 1 or opcode == 3 else program[program[i+1]]
+    param2 = (program[i+2] if mode2 == 1 else program[program[i+2]]) if opcode in [1, 2, 5, 6, 7, 8] else None
+    param3 = program[i+3] if opcode in [1, 2, 7, 8] else None
     
-    if opcode in [1, 2, 5, 6, 7, 8]:
-      param2 = program[i+2] if mode2 == 1 else program[program[i+2]]
-
     if opcode == 1: # add
-      param3 = program[i+3]
       program[param3] = param1 + param2
       i += 4
 
     elif opcode == 2: # mul
-      param3 = program[i+3]
       program[param3] = param1 * param2
       i += 4
     
     elif opcode == 3: # mov
-      param1 = program[i+1]
       program[param1] = input if hasUsedPhase else phase
       hasUsedPhase = True
       i += 2
@@ -66,12 +62,10 @@ def runComputer(program, i, input, phase, hasUsedPhase):
       i = param2 if param1 == 0 else i+3
 
     elif opcode == 7: # less-than
-      param3 = program[i+3]
       program[param3] = 1 if param1 < param2 else 0
       i += 4
 
     elif opcode == 8: # equals
-      param3 = program[i+3]
       program[param3] = 1 if param1 == param2 else 0
       i += 4
 
@@ -104,7 +98,6 @@ def solve(input):
       if not computers[4].halted:
         results[seq] = computers[4].lastOutput
 
-  maxKey = max(results.keys(), key=(lambda k: results[k]))
-  return maxKey, results[maxKey]
+  return max(results.values())
 
 print(solve(data))
