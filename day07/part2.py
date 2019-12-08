@@ -104,10 +104,6 @@ def solve(input):
       if not computers[4].halted:
         results[seq] = computers[4].lastOutput
 
-    # for c in computers: print(c.halted)
-
-  # for x in results: print(x, results[x])
-
   maxKey = max(results.keys(), key=(lambda k: results[k]))
   return maxKey, results[maxKey]
 

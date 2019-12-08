@@ -1,5 +1,4 @@
 import itertools
-import collections
 
 with open('input.txt', 'r') as file:
   data = list(map(int, file.read().splitlines()[0].split(",")))
@@ -19,23 +18,19 @@ def runComputer(data, phase, input):
     mode1 = (program[i] - opcode) // 100 % 10
     mode2 = (program[i] - opcode) // 1000 % 10
 
-    param1 = program[i+1] if mode1 == 1 else program[program[i+1]]
-    
-    if opcode in [1, 2, 5, 6, 7, 8]:
-      param2 = program[i+2] if mode2 == 1 else program[program[i+2]]
+    param1 = program[i+1] if mode1 == 1 or opcode == 3 else program[program[i+1]]
+    param2 = (program[i+2] if mode2 == 1 else program[program[i+2]]) if opcode in [1, 2, 5, 6, 7, 8] else None
+    param3 = program[i+3] if opcode in [1, 2, 7, 8] else None
 
     if opcode == 1: # add
-      param3 = program[i+3]
       program[param3] = param1 + param2
       i += 4
 
     elif opcode == 2: # mul
-      param3 = program[i+3]
       program[param3] = param1 * param2
       i += 4
     
     elif opcode == 3: # mov
-      param1 = program[i+1]
       program[param1] = input if hasUsedPhase else phase
       hasUsedPhase = True
       i += 2
@@ -51,12 +46,10 @@ def runComputer(data, phase, input):
       i = param2 if param1 == 0 else i+3
 
     elif opcode == 7: # less-than
-      param3 = program[i+3]
       program[param3] = 1 if param1 < param2 else 0
       i += 4
 
     elif opcode == 8: # equals
-      param3 = program[i+3]
       program[param3] = 1 if param1 == param2 else 0
       i += 4
 
@@ -69,15 +62,13 @@ def runComputer(data, phase, input):
   return output
 
 def solve(input):
-  results = collections.OrderedDict()
+  results = {}
 
   for seq in itertools.permutations(range(5), 5):
     amplification = 0
     for phase in seq:
       amplification = runComputer(data, phase, amplification)
     results[seq] = amplification
-
-  # for x in results: print(x, results[x])
 
   return max(results.values())
 
