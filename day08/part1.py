@@ -1,32 +1,21 @@
+from collections import defaultdict
+
 with open('input.txt', 'r') as file:
   data = list(map(int, file.read().splitlines()[0]))
 
 def solve(data):
-  # matrix = [[-1 for x in range(w)] for y in range(h)]
-
-  size = 25 * 6
-  nr = len(data) // size
+  width = 25
+  height = 6
   i = 0
-  lowest = None
-  minZeros = None
+  checksums = {}
 
-  for layer in range(nr):
-    nr1 = 0
-    nr2 = 0
-    zeros = 0
-    for _ in range(size):
-      if data[i] == 0: zeros += 1
-      if data[i] == 1: nr1 += 1
-      if data[i] == 2: nr2 += 1
+  while i < len(data):
+    colors = defaultdict(lambda: 0)
+    for _ in range(width * height):
+      colors[data[i]] += 1
       i += 1
+    checksums[colors[0]] = colors[1] * colors[2]
 
-    checksum = nr1 * nr2
-    if minZeros is None or zeros < minZeros:
-      lowest = checksum
-      minZeros = zeros
-      print(i, layer, checksum)
-    
-
-  return 'found', lowest
+  return checksums[sorted(checksums.keys())[0]]
 
 print(solve(data))
