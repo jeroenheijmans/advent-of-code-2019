@@ -18,7 +18,7 @@ Here are the lessons learned for each day:
 5. Programming is more reading than writing.
 6. Don't climb to learning curves at the same time.
 7. Devils live inside Details.
-8. TODO
+8. Solutions make problems look easy.
 9. TODO
 10. TODO
 11. TODO
