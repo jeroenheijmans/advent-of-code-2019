@@ -53,7 +53,7 @@ def runComputer(data, input):
     #print('  modes', mode1, mode2, mode3)
     #print('  params', param1, param2, param3)
     
-    print(opcode, ops[opcode], '- i: ', str(i).rjust(3, ' '), '- relbase:', str(relbase).rjust(4, ' '), '- modes', mode1, mode2, mode3, ' - params', param1, param2, param3)
+    # print(opcode, ops[opcode], '- i: ', str(i).rjust(3, ' '), '- relbase:', str(relbase).rjust(4, ' '), '- modes', mode1, mode2, mode3, ' - params', param1, param2, param3)
 
     if opcode == 1: # add
       if mode3 == 2: param3 = program[i+3] + relbase
@@ -68,12 +68,10 @@ def runComputer(data, input):
     elif opcode == 3: # input
       if mode1 == 2: param1 = program[i+1] + relbase
       program[param1] = input
-      print('inputted', input, 'at', param1, 'i', i)
       i += 2
 
     elif opcode == 4: # out
       output = param1
-      print('outputting', output)
       i += 2
 
     elif opcode == 5: # jump-if-true
@@ -107,10 +105,8 @@ def runComputer(data, input):
   return output
 
 def solve(data):
-  result = runComputer(data, 1)
-  return result
+  part1 = runComputer(data, 1)
+  part2 = runComputer(data, 2)
+  return 'part1: ', part1, 'and part2: ', part2
 
-# Not 3369102156
-# Not 203
-# Not 0 :P
 print(solve(data))
