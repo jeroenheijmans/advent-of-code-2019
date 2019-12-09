@@ -1,11 +1,13 @@
+from collections import defaultdict
+
 with open('input.txt', 'r') as file:
   data = list(map(int, file.read().splitlines()[0].split(",")))
 
-def runComputer(data, phase, input):
-  program = data.copy()
+def runComputer(data, input):
+  program = defaultdict(int, { k: v for k, v in enumerate(data) })
   output = None
   i = 0
-  hasUsedPhase = False
+  relbase = 0
 
   while True:
     opcode = program[i] % 100
@@ -15,10 +17,29 @@ def runComputer(data, phase, input):
 
     mode1 = (program[i] - opcode) // 100 % 10
     mode2 = (program[i] - opcode) // 1000 % 10
+    mode3 = (program[i] - opcode) // 10000 % 10
 
-    param1 = program[i+1] if mode1 == 1 or opcode == 3 else program[program[i+1]]
-    param2 = (program[i+2] if mode2 == 1 else program[program[i+2]]) if opcode in [1, 2, 5, 6, 7, 8] else None
-    param3 = program[i+3] if opcode in [1, 2, 7, 8] else None
+    param1, param2, param3 = None, None, None
+
+    if mode1 == 0: param1 = program[program[i+1]] # position
+    elif mode1 == 1: param1 = program[i+1] # immediate
+    elif opcode == 2: param1 = program[program[i+1] + relbase] # relative
+
+    if opcode in [1, 2, 5, 6, 7, 8]:
+      if mode2 == 0: param2 = program[program[i+2]]
+      elif mode2 == 1: param2 = program[i+2]
+      elif mode2 == 2: param2 = program[program[i+2] + relbase]
+    
+    if opcode in [1, 2, 7, 8]:
+      if mode3 == 0: param3 = program[i+3]
+      elif mode3 == 1: param3 = program[i+3]
+      elif mode3 == 2: param3 = program[program[i+3] + relbase]
+
+    print()
+    print(program)
+    print('operation', opcode,)
+    print('  modes', mode1, mode2, mode3)
+    print('  params', param1, param2, param3, '---', program[i+1])
 
     if opcode == 1: # add
       program[param3] = param1 + param2
@@ -29,8 +50,7 @@ def runComputer(data, phase, input):
       i += 4
     
     elif opcode == 3: # mov
-      program[param1] = input if hasUsedPhase else phase
-      hasUsedPhase = True
+      program[param1] = input
       i += 2
 
     elif opcode == 4: # out
@@ -51,16 +71,22 @@ def runComputer(data, phase, input):
       program[param3] = 1 if param1 == param2 else 0
       i += 4
 
+    elif opcode == 9: # relbase
+      relbase += param1
+      i += 2
+
     else:
       raise ValueError(f'opcode {opcode} from {program[i]}')
   
   if output is None:
     raise ValueError(f'input {input} resulted in no output')
 
+  print(program)
+
   return output
 
 def solve(data):
-
-  return 'No solution found'
+  result = runComputer(data, 1)
+  return result
 
 print(solve(data))
