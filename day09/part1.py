@@ -3,6 +3,18 @@ from collections import defaultdict
 with open('input.txt', 'r') as file:
   data = list(map(int, file.read().splitlines()[0].split(",")))
 
+ops = {
+  1: 'ADD',
+  2: 'MUL',
+  3: 'MOV',
+  4: 'OUT',
+  5: 'JIT',
+  6: 'JIF',
+  7: 'LES',
+  8: 'EQU',
+  9: 'REL'
+}
+
 def runComputer(data, input):
   program = defaultdict(int, { k: v for k, v in enumerate(data) })
   output = None
@@ -35,11 +47,11 @@ def runComputer(data, input):
       elif mode3 == 1: param3 = program[i+3]
       elif mode3 == 2: param3 = program[program[i+3] + relbase]
 
-    print()
-    print(program)
-    print('operation', opcode,)
-    print('  modes', mode1, mode2, mode3)
-    print('  params', param1, param2, param3, '---', program[i+1])
+    #print()
+    #print(program.values())
+    #print('operation', opcode, ops[opcode], ' - at', i, 'relbase', relbase, ' - output', output)
+    #print('  modes', mode1, mode2, mode3)
+    #print('  params', param1, param2, param3)
 
     if opcode == 1: # add
       program[param3] = param1 + param2
@@ -54,6 +66,7 @@ def runComputer(data, input):
       i += 2
 
     elif opcode == 4: # out
+      print(output)
       output = param1
       i += 2
 
@@ -81,7 +94,7 @@ def runComputer(data, input):
   if output is None:
     raise ValueError(f'input {input} resulted in no output')
 
-  print(program)
+  # print(program.values())
 
   return output
 
@@ -89,5 +102,6 @@ def solve(data):
   result = runComputer(data, 1)
   return result
 
+# Not 203
 # Not 0 :P
 print(solve(data))
