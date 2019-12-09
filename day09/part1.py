@@ -23,7 +23,7 @@ def runComputer(data, input):
 
     if mode1 == 0: param1 = program[program[i+1]] # position
     elif mode1 == 1: param1 = program[i+1] # immediate
-    elif opcode == 2: param1 = program[program[i+1] + relbase] # relative
+    elif mode1 == 2: param1 = program[program[i+1] + relbase] # relative
 
     if opcode in [1, 2, 5, 6, 7, 8]:
       if mode2 == 0: param2 = program[program[i+2]]
@@ -89,4 +89,5 @@ def solve(data):
   result = runComputer(data, 1)
   return result
 
+# Not 0 :P
 print(solve(data))
