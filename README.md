@@ -19,7 +19,7 @@ Here are the lessons learned for each day:
 6. Don't climb to learning curves at the same time.
 7. Devils live inside Details.
 8. Solutions make problems look easy.
-9. TODO
+9. Mistakes propagate through serialized solutions.
 10. TODO
 11. TODO
 12. TODO
