@@ -6,7 +6,7 @@ with open('input.txt', 'r') as file:
 ops = {
   1: 'ADD',
   2: 'MUL',
-  3: 'MOV',
+  3: 'INP',
   4: 'OUT',
   5: 'JIT',
   6: 'JIF',
@@ -61,13 +61,14 @@ def runComputer(data, input):
       program[param3] = param1 * param2
       i += 4
     
-    elif opcode == 3: # mov
+    elif opcode == 3: # input
       program[param1] = input
+      print('inputted', input, 'at', param1, 'i', i)
       i += 2
 
     elif opcode == 4: # out
-      print(output)
       output = param1
+      print('outputting', output)
       i += 2
 
     elif opcode == 5: # jump-if-true
