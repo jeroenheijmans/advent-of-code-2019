@@ -52,6 +52,8 @@ def runComputer(data, input):
     #print('operation', opcode, ops[opcode], ' - at', i, 'relbase', relbase, ' - output', output)
     #print('  modes', mode1, mode2, mode3)
     #print('  params', param1, param2, param3)
+    
+    print(opcode, ops[opcode], '- i: ', str(i).rjust(3, ' '), '- relbase:', str(relbase).rjust(4, ' '), '- modes', mode1, mode2, mode3, ' - params', param1, param2, param3)
 
     if opcode == 1: # add
       program[param3] = param1 + param2
