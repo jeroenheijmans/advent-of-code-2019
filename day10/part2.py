@@ -19,8 +19,8 @@ def solve(input):
     for other in points.keys():
       if p == other: continue
       rad = math.atan2(other[1]-p[1], other[0]-p[0])
-      key = int(math.degrees(rad))
-      
+      if rad < (math.pi / 2 * -1): rad = math.pi + math.pi + rad
+      key = int(rad * 1000000)
       if key not in points[p]:
         points[p][key] = list()
       points[p][key].append(other)
@@ -38,7 +38,7 @@ def solve(input):
   printed = True
   while i < 200 and printed:
     printed = False
-    for key in sorted(points[station].keys(), reverse=True):
+    for key in sorted(points[station].keys()):
       if len(points[station][key]) == 0: continue
       i += 1
       target = points[station][key].pop(0)
@@ -47,7 +47,7 @@ def solve(input):
       printed = True
       if i == 200: break
 
-  return 'done'
+  return 'done for station', station
 
 # Not 315
 print(solve(data))
