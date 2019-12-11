@@ -85,9 +85,16 @@ def solve(data):
     painteds.add((x, y))
     if color == 1: whites.add((x, y))
 
-    if turn == 0: direction -= 1
-    if turn == 1: direction += 1
-    direction = (direction + 3) % 3
+    if turn == 0:
+      if direction == U: direction = L
+      if direction == R: direction = U
+      if direction == D: direction = R
+      if direction == L: direction = D
+    if turn == 1:
+      if direction == U: direction = R
+      if direction == R: direction = D
+      if direction == D: direction = L
+      if direction == L: direction = U
 
     if direction == U: y -= 1
     if direction == R: x += 1
@@ -111,4 +118,5 @@ def solve(data):
 
 # Not 7068
 # Not 7634
+# Not 6263
 print(solve(data))
