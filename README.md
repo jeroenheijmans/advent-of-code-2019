@@ -21,7 +21,7 @@ Here are the lessons learned for each day:
 8. **Solutions make problems look easy**.
 9. Mistakes propagate through serialized solutions.
 10. Trigonomotry is _not_ like riding a bicycle.
-11. TODO
+11. Know when precision is required. Then use it.
 12. TODO
 13. TODO
 14. TODO
