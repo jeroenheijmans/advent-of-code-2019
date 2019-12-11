@@ -84,7 +84,6 @@ def solve(data):
 
     painteds.add((x, y))
     if color == 1: whites.add((x, y))
-    inputs.append(color)
 
     if turn == 0: direction -= 1
     if turn == 1: direction += 1
@@ -98,6 +97,7 @@ def solve(data):
     maxy, maxx = max(maxy, y), max(maxx, x)
     miny, minx = min(miny, y), min(minx, x)
 
+    inputs.append(1 if (x,y) in whites else 0)
     print(len(painteds))
 
   x, y = 0, 0
@@ -105,9 +105,10 @@ def solve(data):
     line = ""
     for x in range(minx, maxx):
       line += "█" if (x, y) in whites else '░'
-    print(line)
+    # print(line)
 
   return 'Done!'
 
 # Not 7068
+# Not 7634
 print(solve(data))
