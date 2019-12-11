@@ -63,60 +63,39 @@ def runComputer(data, input):
     else:
       raise ValueError(f'opcode {opcode} from {program[i]}')
 
-U = 0
-R = 1
-D = 2
-L = 3
+directions = [(0,-1), (1,0), (0,1), (-1,0)]
+turns = [-1, +1]
 
 def solve(data):
-  direction = U
+  direction = 0
   x, y = 0, 0
-  maxy, maxx, miny, minx = 0, 0, 0, 0
-  paints = 0
-  colors = dict()
+  colors = defaultdict(int)
   inputs = [1]
   runner = runComputer(data, inputs)
 
   while True:
-    color = next(runner, 'exhausted!')
-    turn = next(runner, 'exhausted!')
-    if color == 'exhausted!': break
+    color = next(runner, 'halt')
+    turn = next(runner, 'halt')
+    if color == 'halt': break
 
-    if (x,y) not in colors: paints += 1
+    colors[(x,y)] = color
 
-    if color == 1 or (x,y) in colors:
-      colors[(x,y)] = color
+    direction = (direction + turns[turn] + 4) % 4
 
-    if turn == 0: # left turn
-      if direction == U: direction = L
-      elif direction == R: direction = U
-      elif direction == D: direction = R
-      elif direction == L: direction = D
-    elif turn == 1: # right turn
-      if direction == U: direction = R
-      elif direction == R: direction = D
-      elif direction == D: direction = L
-      elif direction == L: direction = U
+    x += directions[direction][0]
+    y += directions[direction][1]
 
-    if direction == U: y -= 1
-    if direction == R: x += 1
-    if direction == D: y += 1
-    if direction == L: x -= 1
+    inputs.append(colors[(x,y)])
 
-    maxy = max(maxy, y)
-    maxx = max(maxx, x)
-    miny = min(miny, y)
-    minx = min(minx, x)
+  minx = min([p[0] for p in colors])
+  maxx = max([p[0] for p in colors])
+  miny = min([p[1] for p in colors])
+  maxy = max([p[1] for p in colors])
 
-    inputs.append(0 if (x,y) not in colors else colors[(x,y)])
-
-  print(paints)
-
-  x, y = 0, 0
   for y in range(miny, maxy + 1):
     line = ""
     for x in range(minx, maxx + 1):
-      line += "█" if (x,y) in colors and colors[(x,y)] == 1 else '░'
+      line += "█" if colors[(x,y)] == 1 else '░'
     print(line)
 
   return 'Done!'
