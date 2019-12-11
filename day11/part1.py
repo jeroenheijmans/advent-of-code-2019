@@ -74,7 +74,7 @@ def solve(data):
   maxy, maxx, miny, minx = 0, 0, 0, 0
   whites = set()
   painteds = set()
-  inputs = [1] # part2?! :D
+  inputs = [0]
   runner = runComputer(data, inputs)
 
   while True:
@@ -82,8 +82,11 @@ def solve(data):
     turn = next(runner, 'exhausted!')
     if color == 'exhausted!': break
 
-    painteds.add((x, y))
-    if color == 1: whites.add((x, y))
+    if color == 1:
+      painteds.add((x, y))
+      whites.add((x, y))
+    if color == 0:
+      if (x, y) in whites: whites.remove((x, y))
 
     if turn == 0: # left turn
       if direction == U: direction = L
@@ -101,8 +104,10 @@ def solve(data):
     if direction == D: y += 1
     if direction == L: x -= 1
 
-    maxy, maxx = max(maxy, y), max(maxx, x)
-    miny, minx = min(miny, y), min(minx, x)
+    maxy = max(maxy, y)
+    maxx = max(maxx, x)
+    miny = min(miny, y)
+    minx = min(minx, x)
 
     inputs.append(1 if (x,y) in whites else 0)
     print(len(painteds))
@@ -120,4 +125,5 @@ def solve(data):
 # Not 7634
 # Not 6263
 # Not 184
+# Not 5785
 print(solve(data))
