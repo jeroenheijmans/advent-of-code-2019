@@ -113,17 +113,12 @@ def solve(data):
   print(paints)
 
   x, y = 0, 0
-  for y in range(miny, maxy):
+  for y in range(miny, maxy + 1):
     line = ""
-    for x in range(minx, maxx):
-      line += "█" if (x, y) in colors and colors[(x,y)] == 1 else '░'
+    for x in range(minx, maxx + 1):
+      line += "█" if (x,y) in colors and colors[(x,y)] == 1 else '░'
     print(line)
 
   return 'Done!'
 
-# Not 7068
-# Not 7634
-# Not 6263
-# Not 184
-# Not 5785
 print(solve(data))
