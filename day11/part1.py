@@ -72,8 +72,8 @@ def solve(data):
   direction = U
   x, y = 0, 0
   maxy, maxx, miny, minx = 0, 0, 0, 0
-  whites = set()
-  painteds = set()
+  paints = 0
+  colors = dict()
   inputs = [0]
   runner = runComputer(data, inputs)
 
@@ -82,22 +82,21 @@ def solve(data):
     turn = next(runner, 'exhausted!')
     if color == 'exhausted!': break
 
-    if color == 1:
-      painteds.add((x, y))
-      whites.add((x, y))
-    if color == 0:
-      if (x, y) in whites: whites.remove((x, y))
+    if (x,y) not in colors: paints += 1
+
+    if color == 1 or (x,y) in colors:
+      colors[(x,y)] = color
 
     if turn == 0: # left turn
       if direction == U: direction = L
-      if direction == R: direction = U
-      if direction == D: direction = R
-      if direction == L: direction = D
-    if turn == 1: # right turn
+      elif direction == R: direction = U
+      elif direction == D: direction = R
+      elif direction == L: direction = D
+    elif turn == 1: # right turn
       if direction == U: direction = R
-      if direction == R: direction = D
-      if direction == D: direction = L
-      if direction == L: direction = U
+      elif direction == R: direction = D
+      elif direction == D: direction = L
+      elif direction == L: direction = U
 
     if direction == U: y -= 1
     if direction == R: x += 1
@@ -109,15 +108,16 @@ def solve(data):
     miny = min(miny, y)
     minx = min(minx, x)
 
-    inputs.append(1 if (x,y) in whites else 0)
-    print(len(painteds))
+    inputs.append(0 if (x,y) not in colors else colors[(x,y)])
+
+  print(paints)
 
   x, y = 0, 0
   for y in range(miny, maxy):
     line = ""
     for x in range(minx, maxx):
-      line += "█" if (x, y) in whites else '░'
-    # print(line)
+      line += "█" if (x, y) in colors and colors[(x,y)] == 1 else '░'
+    print(line)
 
   return 'Done!'
 
