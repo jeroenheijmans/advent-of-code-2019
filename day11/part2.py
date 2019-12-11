@@ -67,8 +67,7 @@ directions = [(0,-1), (1,0), (0,1), (-1,0)]
 turns = [-1, +1]
 
 def solve(data):
-  direction = 0
-  x, y = 0, 0
+  direction, x, y = 0, 0, 0
   colors = defaultdict(int)
   inputs = [1]
   runner = runComputer(data, inputs)
