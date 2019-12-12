@@ -71,6 +71,6 @@ def solve(input):
     if step % 1e5 == 0:
       print(step, ",", round(time() - start, 3))
 
-  return step
+  return step + 1
 
 print(solve(data))
