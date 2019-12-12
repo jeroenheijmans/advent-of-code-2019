@@ -12,23 +12,21 @@ def solve(input):
   positions = [(-8, -10, 0), (5, 5, 10), (2, -7, 3), (9, -8, -3)]
 
   # My input:
-  #positions = [(-8, -9,  -7), (-5,  2,  -1), (11,  8, -14), ( 1, -4, -11)]
+  positions = [(-8, -9,  -7), (-5,  2,  -1), (11,  8, -14), ( 1, -4, -11)]
 
   velocities = [(0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0)]
   start = time()
   startpositions = positions.copy()
   startvelocities = velocities.copy()
 
-  for step in range(4_686_774_924 + 1):
+  for step in range(4_686_774_924 + 1_000_000_000):
     for one, two in combinations([0, 1, 2, 3], 2):
       p1 = positions[one]
       p2 = positions[two]
 
-      factor = 1
-
-      dx = factor if p1[0] < p2[0] else -factor if p1[0] > p2[0] else 0
-      dy = factor if p1[1] < p2[1] else -factor if p1[1] > p2[1] else 0
-      dz = factor if p1[2] < p2[2] else -factor if p1[2] > p2[2] else 0
+      dx = 1 if p1[0] < p2[0] else -1 if p1[0] > p2[0] else 0
+      dy = 1 if p1[1] < p2[1] else -1 if p1[1] > p2[1] else 0
+      dz = 1 if p1[2] < p2[2] else -1 if p1[2] > p2[2] else 0
 
       v1 = velocities[one]
       v2 = velocities[two]
