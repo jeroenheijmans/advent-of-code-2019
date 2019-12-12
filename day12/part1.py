@@ -5,6 +5,12 @@ with open('input.txt', 'r') as file:
 
 def solve(input):
   # Example 1
+  positions = [
+    (-1, 0, 2),
+    (2, -10, -7),
+    (4, -8, 8),
+    (3, 5, -1)
+  ]
 
   # Example 2
   # positions = [
@@ -29,14 +35,17 @@ def solve(input):
   ]
 
   for step in range(1000):
+    print(step, '=', positions, 'vel', velocities)
+
     for one in range(len(positions)):
       for two in range(len(positions)):
         if one == two: continue
         velocities[one] = (
-          (1 if positions[one][0] < positions[two][0] else (-1 if positions[one][0] > positions[two][0] else 0)),
-          (1 if positions[one][1] < positions[two][1] else (-1 if positions[one][1] > positions[two][1] else 0)),
-          (1 if positions[one][2] < positions[two][2] else (-1 if positions[one][2] > positions[two][2] else 0))
+          velocities[one][0] + (1 if positions[one][0] < positions[two][0] else (-1 if positions[one][0] > positions[two][0] else 0)),
+          velocities[one][1] + (1 if positions[one][1] < positions[two][1] else (-1 if positions[one][1] > positions[two][1] else 0)),
+          velocities[one][2] + (1 if positions[one][2] < positions[two][2] else (-1 if positions[one][2] > positions[two][2] else 0))
         )
+        # if one == 0: print(velocities[one])
 
     for one in range(len(positions)):
       positions[one] = (
@@ -44,8 +53,6 @@ def solve(input):
         positions[one][1] + velocities[one][1],
         positions[one][2] + velocities[one][2]
       )
-
-    print(step, '=', positions)
 
   energy = 0
 
@@ -59,4 +66,5 @@ def solve(input):
 
 # Not 35889
 # Not -7
+# Not -2789
 print(solve(data))
