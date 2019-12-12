@@ -44,7 +44,6 @@ def solve(input):
   ]
 
   for step in range(1000):
-
     print(
       step,
       '=',
@@ -65,7 +64,6 @@ def solve(input):
         elif positions[one][1] > positions[two][1]: dy = -1
         else: dy = 0
         
-        # if one == 0: print(positions[one][2], 'vs', positions[two][2])
         if positions[one][2] < positions[two][2]: dz = 1
         elif positions[one][2] > positions[two][2]: dz = -1
         else: dz = 0
@@ -75,7 +73,6 @@ def solve(input):
           velocities[one][1] + dy,
           velocities[one][2] + dz
         )
-        # if one == 0: print(velocities[one])
 
     for one in range(len(positions)):
       positions[one] = (
@@ -95,8 +92,4 @@ def solve(input):
 
   return energy
 
-# Not 35889
-# Not -7
-# Not -2789
-# Not 623
 print(solve(data))
