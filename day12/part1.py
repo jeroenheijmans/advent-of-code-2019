@@ -4,6 +4,16 @@ with open('input.txt', 'r') as file:
   data = list(file.read().splitlines())
 
 def solve(input):
+  # Example 1
+
+  # Example 2
+  # positions = [
+  #   (-8, -10, 0),
+  #   (5, 5, 10),
+  #   (2, -7, 3),
+  #   (9, -8, 3)
+  # ]
+
   positions = [
     (-8, -9,  -7),
     (-5,  2,  -1),
@@ -19,14 +29,13 @@ def solve(input):
   ]
 
   for step in range(1000):
-    newpositions = []
     for one in range(len(positions)):
       for two in range(len(positions)):
         if one == two: continue
         velocities[one] = (
-          (1 if positions[one][0] < positions[two][0] else (1 if positions[one][0] > positions[two][0] else 0)),
-          (1 if positions[one][1] < positions[two][1] else (1 if positions[one][1] > positions[two][1] else 0)),
-          (1 if positions[one][2] < positions[two][2] else (1 if positions[one][2] > positions[two][2] else 0))
+          (1 if positions[one][0] < positions[two][0] else (-1 if positions[one][0] > positions[two][0] else 0)),
+          (1 if positions[one][1] < positions[two][1] else (-1 if positions[one][1] > positions[two][1] else 0)),
+          (1 if positions[one][2] < positions[two][2] else (-1 if positions[one][2] > positions[two][2] else 0))
         )
 
     for one in range(len(positions)):
@@ -35,6 +44,8 @@ def solve(input):
         positions[one][1] + velocities[one][1],
         positions[one][2] + velocities[one][2]
       )
+
+    print(step, '=', positions)
 
   energy = 0
 
@@ -47,4 +58,5 @@ def solve(input):
   return energy
 
 # Not 35889
+# Not -7
 print(solve(data))
