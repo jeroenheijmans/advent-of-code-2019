@@ -19,6 +19,14 @@ def solve(input):
   #   (2, -7, 3),
   #   (9, -8, 3)
   # ]
+  
+  # Own example
+  # positions = [
+  #   (1, 0, 0),
+  #   (0, 0, 0),
+  #   (0, 0, 0),
+  #   (0, 0, 0)
+  # ]
 
   positions = [
     (-8, -9,  -7),
@@ -34,8 +42,7 @@ def solve(input):
     (0, 0, 0)
   ]
 
-  for step in range(1000):
-    print(step, '=', positions, 'vel', velocities)
+  for step in range(10):
 
     for one in range(len(positions)):
       for two in range(len(positions)):
@@ -54,17 +61,21 @@ def solve(input):
         positions[one][2] + velocities[one][2]
       )
 
+    print(step, '=', positions, 'vel', velocities)
+
   energy = 0
 
   for one in range(len(positions)):
-    pot = positions[one][0] + positions[one][1] + positions[one][2]
-    kin = velocities[one][0] + velocities[one][1] + velocities[one][2]
+    pot = abs(positions[one][0]) + abs(positions[one][1]) + abs(positions[one][2])
+    kin = abs(velocities[one][0]) + abs(velocities[one][1]) + abs(velocities[one][2])
     total = pot * kin
     energy += total
+    print(pot, '*', kin, '=', total)
 
   return energy
 
 # Not 35889
 # Not -7
 # Not -2789
+# Not 623
 print(solve(data))
