@@ -1,25 +1,35 @@
+from csv import writer
 from time import time
 from itertools import permutations, combinations
 
 with open('input.txt', 'r') as file:
   data = list(file.read().splitlines())
 
+def energy(vector):
+  return abs(vector[0]) + abs(vector[1]) + abs(vector[2])
+
+def energies(vectors):
+  return sum(map(energy, vectors))
+
 def solve(input):
   # Example 1
   positions = [(-1, 0, 2), (2, -10, -7), (4, -8, 8), (3, 5, -1)]
 
   # Example 2
-  positions = [(-8, -10, 0), (5, 5, 10), (2, -7, 3), (9, -8, -3)]
+  # positions = [(-8, -10, 0), (5, 5, 10), (2, -7, 3), (9, -8, -3)]
 
   # My input:
-  positions = [(-8, -9,  -7), (-5,  2,  -1), (11,  8, -14), ( 1, -4, -11)]
+  # positions = [(-8, -9,  -7), (-5,  2,  -1), (11,  8, -14), ( 1, -4, -11)]
 
   velocities = [(0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0)]
   start = time()
   startpositions = positions.copy()
   startvelocities = velocities.copy()
+  csv = []
 
   for step in range(4_686_774_924 + 1_000_000_000):
+    csv.append([energies(positions), energies(velocities)])
+
     for one, two in combinations([0, 1, 2, 3], 2):
       p1 = positions[one]
       p2 = positions[two]
@@ -52,6 +62,12 @@ def solve(input):
 
     if step % 1e5 == 0:
       print(step, ",", round(time() - start, 3), positions)
+
+  csv.append([energies(positions), energies(velocities)])
+  
+  with open("out.csv", "w", newline="") as csvfile:
+    wr = writer(csvfile)
+    wr.writerows(csv)
 
   return step + 1
 
