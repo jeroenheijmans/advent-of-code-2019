@@ -23,7 +23,7 @@ Here are the lessons learned for each day:
 10. Trigonomotry is _not_ like riding a bicycle.
 11. Know when precision is required. Then use it.
 12. TODO
-13. TODO
+13. Magic: how much others can do with so little.
 14. TODO
 15. TODO
 16. TODO
