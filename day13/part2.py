@@ -1,6 +1,7 @@
 import os
 from collections import defaultdict
 
+# Windows only :P
 clear = lambda: os.system('cls')
 
 with open('input.txt', 'r') as file:
@@ -68,11 +69,9 @@ def runComputer(data, input):
 
 def show(level, i = 0):
   while True:
-    print("press enter for next step")
-    input()
-    clear()
+    # clear()
     i += 1
-    print(i)
+    print('Draw', i)
 
     minx = min([p[0] for p in level])
     maxx = max([p[0] for p in level])
@@ -82,27 +81,30 @@ def show(level, i = 0):
     for y in range(miny, maxy + 1):
       line = ""
       for x in range(minx, maxx + 1):
-        if level[(x,y)] == 0: line += '·'
+        if level[(x,y)] == 0: line += '.'
         elif level[(x,y)] == 1: line += '█'
         elif level[(x,y)] == 2: line += '░'
         elif level[(x,y)] == 3: line += 'X'
-        elif level[(x,y)] == 4: line += 'Ø'
-        elif level[(x,y)] == 9: line += 'o'
+        elif level[(x,y)] == 4: line += '●'
         else: line += '?'
       print(line)
+      
+    # print("press enter for next step")
+    # yield input()
+    print()
     yield
 
 def solve(data):
   x, y = 0, 0
   bx, by = 0, 0
   px, py = 0, 0
-  xdirection = 1
   inputs = [0]
   score = -1
   level = defaultdict(int)
   data[0] = 2 # free play!
   runner = runComputer(data, inputs)
   shower = show(level)
+  initialDrawDone = False
 
   while True:
     x, y, tile = next(runner, 'halt'), next(runner, 'halt'), next(runner, 'halt')
@@ -114,37 +116,31 @@ def solve(data):
     
     level[(x,y)] = tile
     
-    if bx == x and by == y and tile == 0:
-      level[(x,y)] = 9
-
+    if tile == 3 and not initialDrawDone:
+      print('Score:', score)
+      _ = next(shower)
+      initialDrawDone = True
+    
     if tile == 3:
       px = x
       py = y
 
     if tile == 4:
-      if x > bx: xdirection = 1
-      elif x < bx: xdirection = -1
-      else: xdirection == 0
       bx = x
       by = y
 
-    targetx = bx + (xdirection * (py - by))
     inputs.clear()
 
-    if px < targetx:
-      inputs.append(1)
-    elif px > targetx:
-      inputs.append(-1)
+    if px < bx:
+      inputs.append(1 if by < py + 1 else -1)
+    elif px > bx:
+      inputs.append(-1 if by < py + 1 else 1)
     elif len(inputs) == 0:
       inputs.append(0)
 
-    if tile == 3:
-      print('Score now', score)
-      next(shower)
-
+  print('Score:', score)
   next(shower)
 
   return 'Score', score
 
-# Guessed 32879 (427 blocks * 77 points for the first block)
 print(solve(data))
