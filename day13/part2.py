@@ -83,10 +83,12 @@ def show(level, i = 0):
       line = ""
       for x in range(minx, maxx + 1):
         if level[(x,y)] == 0: line += '·'
-        if level[(x,y)] == 1: line += '█'
-        if level[(x,y)] == 2: line += '░'
-        if level[(x,y)] == 3: line += 'X'
-        if level[(x,y)] == 4: line += 'o'
+        elif level[(x,y)] == 1: line += '█'
+        elif level[(x,y)] == 2: line += '░'
+        elif level[(x,y)] == 3: line += 'X'
+        elif level[(x,y)] == 4: line += 'Ø'
+        elif level[(x,y)] == 9: line += 'o'
+        else: line += '?'
       print(line)
     yield
 
@@ -94,7 +96,7 @@ def solve(data):
   x, y = 0, 0
   bx, by = 0, 0
   px, py = 0, 0
-  xdirection = 0
+  xdirection = 1
   inputs = [0]
   score = -1
   level = defaultdict(int)
@@ -105,7 +107,15 @@ def solve(data):
   while True:
     x, y, tile = next(runner, 'halt'), next(runner, 'halt'), next(runner, 'halt')
     if x == 'halt': break
+    
+    if x == -1:
+      score = tile
+      continue
+    
     level[(x,y)] = tile
+    
+    if bx == x and by == y and tile == 0:
+      level[(x,y)] = 9
 
     if tile == 3:
       px = x
@@ -118,20 +128,23 @@ def solve(data):
       bx = x
       by = y
 
-    if x == -1:
-      score = tile
+    targetx = bx + (xdirection * (py - by))
+    inputs.clear()
 
-    if (bx + xdirection) < px and by != py:
-      inputs.append(-1)
-    elif (bx + xdirection) > px and by != py:
+    if px < targetx:
       inputs.append(1)
+    elif px > targetx:
+      inputs.append(-1)
     elif len(inputs) == 0:
       inputs.append(0)
 
-    if tile == 3: next(shower)
+    if tile == 3:
+      print('Score now', score)
+      next(shower)
 
   next(shower)
 
   return 'Score', score
 
+# Guessed 32879 (427 blocks * 77 points for the first block)
 print(solve(data))
