@@ -1,4 +1,7 @@
+import os
 from collections import defaultdict
+
+clear = lambda: os.system('cls')
 
 with open('input.txt', 'r') as file:
   data = list(map(int, file.read().splitlines()[0].split(",")))
@@ -63,37 +66,72 @@ def runComputer(data, input):
     else:
       raise ValueError(f'opcode {opcode} from {program[i]}')
 
-def show(level):
-  minx = min([p[0] for p in level])
-  maxx = max([p[0] for p in level])
-  miny = min([p[1] for p in level])
-  maxy = max([p[1] for p in level])
+def show(level, i = 0):
+  while True:
+    print("press enter for next step")
+    input()
+    clear()
+    i += 1
+    print(i)
 
-  for y in range(miny, maxy + 1):
-    line = ""
-    for x in range(minx, maxx + 1):
-      if level[(x,y)] == 0: line += '·'
-      if level[(x,y)] == 1: line += '█'
-      if level[(x,y)] == 2: line += '░'
-      if level[(x,y)] == 3: line += 'X'
-      if level[(x,y)] == 4: line += 'o'
-    print(line)
+    minx = min([p[0] for p in level])
+    maxx = max([p[0] for p in level])
+    miny = min([p[1] for p in level])
+    maxy = max([p[1] for p in level])
+
+    for y in range(miny, maxy + 1):
+      line = ""
+      for x in range(minx, maxx + 1):
+        if level[(x,y)] == 0: line += '·'
+        if level[(x,y)] == 1: line += '█'
+        if level[(x,y)] == 2: line += '░'
+        if level[(x,y)] == 3: line += 'X'
+        if level[(x,y)] == 4: line += 'o'
+      print(line)
+    yield
 
 def solve(data):
   x, y = 0, 0
-  inputs = []
-  runner = runComputer(data, inputs)
-  blocks = 0
+  bx, by = 0, 0
+  px, py = 0, 0
+  xdirection = 0
+  inputs = [0]
+  score = -1
   level = defaultdict(int)
+  data[0] = 2 # free play!
+  runner = runComputer(data, inputs)
+  shower = show(level)
 
   while True:
     x, y, tile = next(runner, 'halt'), next(runner, 'halt'), next(runner, 'halt')
     if x == 'halt': break
-    if tile == 2: blocks += 1
     level[(x,y)] = tile
 
-  show(level)
+    if tile == 3:
+      px = x
+      py = y
 
-  return blocks
+    if tile == 4:
+      if x > bx: xdirection = 1
+      elif x < bx: xdirection = -1
+      else: xdirection == 0
+      bx = x
+      by = y
+
+    if x == -1:
+      score = tile
+
+    if (bx + xdirection) < px and by != py:
+      inputs.append(-1)
+    elif (bx + xdirection) > px and by != py:
+      inputs.append(1)
+    elif len(inputs) == 0:
+      inputs.append(0)
+
+    if tile == 3: next(shower)
+
+  next(shower)
+
+  return 'Score', score
 
 print(solve(data))
