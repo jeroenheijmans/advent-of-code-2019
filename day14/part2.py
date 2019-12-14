@@ -1,4 +1,4 @@
-from math import ceil
+from math import ceil, floor
 from collections import defaultdict
 
 with open('input.txt', 'r') as file:
@@ -14,34 +14,74 @@ with open('input.txt', 'r') as file:
     output = (int(outparts[0]), outparts[1])
     reactions[output] = inputs
 
-def solve(data):
+def solveFor(reactions, fuelNeeded):
+  needed = { "FUEL": fuelNeeded }
+  leftovers = defaultdict(int)
+  limit = 0
+
+  while True and limit < 10000:
+    limit += 1
+    #print("Need:", needed, '--- leftovers:', dict(leftovers))
+
+    if len(needed) == 1 and "ORE" in needed:
+      #print("\nFOUND NEEDS!")
+      break
+
+    newneeded = dict()
+
+    if "ORE" in needed:
+      newneeded["ORE"] = needed["ORE"]
+    
+    for n in needed:
+      for rkey in reactions:
+        if rkey[1] == n:
+          actuallyneeded = max(0, needed[n] - leftovers[n])
+          leftovers[n] -= (needed[n] - actuallyneeded)
+          if actuallyneeded == 0:
+            continue
+
+          produced = rkey[0]
+          factor = int(ceil(actuallyneeded / produced))
+          ingredients = reactions[rkey]
+          surplus = (produced * factor) - actuallyneeded
+          leftovers[n] += surplus
+
+          for ing in ingredients:
+            alreadyneeded = 0 if ing[1] not in newneeded else newneeded[ing[1]]
+            req = ing[0] * factor
+            #print(ing, '· factor', factor, '· req', req, '· plus', alreadyneeded)
+            newneeded[ing[1]] = req + alreadyneeded
+
+    needed = newneeded
+  
+  return needed
+
+def solve(reactions):
   print('REACTIONS:')
   for k in reactions:
     print(k, reactions[k])
   print()
 
-  inventory = defaultdict(int)
-  limit = 0
-  inventory["ORE"] = 1000000000000
+  trillion = 1_000_000_000_000
+  fuel = 1
+  tried = set()
 
-  while True and limit < 5: # just a few steps...
-    print('inventory', dict(inventory))
-    limit += 1
-
-    for r in reactions:
-      possibleFactors = []
-      for ing in reactions[r]:
-        factor = 0 if inventory[ing[1]] == 0 else inventory[ing[1]] // ing[0]
-        possibleFactors.append(factor)
-      finalFactor = min(possibleFactors)
-
-      for ing in reactions[r]:
-        inventory[ing[1]] -= finalFactor * ing[0]
+  while True:
+    tried.add(fuel)
+    needed = solveFor(reactions, fuel)
+    ore = 0 if "ORE" not in needed else needed["ORE"]
+    print(fuel, 'fuel requires', ore, 'ore')
+    
+    
+    if ore < trillion:
+      factor = trillion / ore
+      fuel = floor(fuel * factor)
+    else:
+      break
       
-      print('producing', r, 'factor', finalFactor)
-      inventory[r[1]] += r[0] * finalFactor
+    if fuel in tried: break
+    tried.add(fuel)
+    
 
-
-  return inventory["FUEL"]
-
+print("Presumably a lucky answer, could've been off-by-one (or a few)")
 print(solve(reactions))
