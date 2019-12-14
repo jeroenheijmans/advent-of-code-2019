@@ -1,3 +1,6 @@
+from math import ceil
+from collections import defaultdict
+
 with open('input.txt', 'r') as file:
   data = file.read().splitlines()
   reactions = dict()
@@ -18,11 +21,12 @@ def solve(data):
   print()
 
   needed = { "FUEL": 1 }
+  leftovers = defaultdict(int)
   limit = 0
 
   while True and limit < 1000:
     limit += 1
-    print("Need:", needed)
+    print("Need:", needed, '--- leftovers:', dict(leftovers))
 
     if len(needed) == 1 and "ORE" in needed:
       print("\nFOUND NEEDS!")
@@ -36,15 +40,24 @@ def solve(data):
     for n in needed:
       for rkey in reactions:
         if rkey[1] == n:
-          produce = rkey[0]
-          factor = produce // needed[n]
-          ingreds = reactions[rkey]
-          for ing in ingreds:
-            alreadyneeded = 0 if ing[1] not in newneeded else newneeded[ing[1]]
-            newneeded[ing[1]] = ing[0] * factor + alreadyneeded
+          produced = rkey[0]
+          factor = int(ceil(needed[n] / produced))
+          ingredients = reactions[rkey]
+          surplus = (produced * factor) - needed[n]
+          leftovers[n] += surplus
+
+          if n in leftovers and leftovers[n] >= needed[n]:
+            leftovers[n] -= needed[n]
+          else:
+            for ing in ingredients:
+              alreadyneeded = 0 if ing[1] not in newneeded else newneeded[ing[1]]
+              req = ing[0] * factor
+              print(ing, 'at factor', factor)
+              newneeded[ing[1]] = req + alreadyneeded
 
     needed = newneeded
   
   return needed
 
+# Not 85902 ("too low")
 print(solve(reactions))
