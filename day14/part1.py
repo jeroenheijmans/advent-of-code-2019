@@ -40,24 +40,25 @@ def solve(data):
     for n in needed:
       for rkey in reactions:
         if rkey[1] == n:
+          actuallyneeded = max(0, needed[n] - leftovers[n])
+          leftovers[n] -= (needed[n] - actuallyneeded)
+          if actuallyneeded == 0:
+            continue
+
           produced = rkey[0]
-          factor = int(ceil(needed[n] / produced))
+          factor = int(ceil(actuallyneeded / produced))
           ingredients = reactions[rkey]
-          surplus = (produced * factor) - needed[n]
+          surplus = (produced * factor) - actuallyneeded
           leftovers[n] += surplus
 
-          if n in leftovers and leftovers[n] >= needed[n]:
-            leftovers[n] -= needed[n]
-          else:
-            for ing in ingredients:
-              alreadyneeded = 0 if ing[1] not in newneeded else newneeded[ing[1]]
-              req = ing[0] * factor
-              print(ing, 'at factor', factor)
-              newneeded[ing[1]] = req + alreadyneeded
+          for ing in ingredients:
+            alreadyneeded = 0 if ing[1] not in newneeded else newneeded[ing[1]]
+            req = ing[0] * factor
+            print(ing, '· factor', factor, '· req', req, '· plus', alreadyneeded)
+            newneeded[ing[1]] = req + alreadyneeded
 
     needed = newneeded
   
   return needed
 
-# Not 85902 ("too low")
 print(solve(reactions))
