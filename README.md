@@ -24,7 +24,7 @@ Here are the lessons learned for each day:
 11. Know when precision is required. Then use it.
 12. TODO
 13. Magic: how much others can do with so little.
-14. TODO
+14. Some languages have higher cognitive load than others.
 15. TODO
 16. TODO
 17. TODO
