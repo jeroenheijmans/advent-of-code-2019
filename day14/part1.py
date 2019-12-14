@@ -14,22 +14,17 @@ with open('input.txt', 'r') as file:
     output = (int(outparts[0]), outparts[1])
     reactions[output] = inputs
 
-def solve(data):
-  print('REACTIONS:')
-  for k in reactions:
-    print(k, reactions[k])
-  print()
+# print('REACTIONS:')
+# for k in reactions:
+#   print(k, reactions[k])
+# print()
 
+def solve(data):
   needed = { "FUEL": 1 }
   leftovers = defaultdict(int)
-  limit = 0
 
-  while True and limit < 1000:
-    limit += 1
-    print("Need:", needed, '--- leftovers:', dict(leftovers))
-
+  while True:
     if len(needed) == 1 and "ORE" in needed:
-      print("\nFOUND NEEDS!")
       break
 
     newneeded = dict()
@@ -54,11 +49,10 @@ def solve(data):
           for ing in ingredients:
             alreadyneeded = 0 if ing[1] not in newneeded else newneeded[ing[1]]
             req = ing[0] * factor
-            print(ing, '· factor', factor, '· req', req, '· plus', alreadyneeded)
             newneeded[ing[1]] = req + alreadyneeded
 
     needed = newneeded
   
-  return needed
+  return needed["ORE"]
 
-print(solve(reactions))
+print("Part 1:", solve(reactions))

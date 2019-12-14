@@ -17,14 +17,9 @@ with open('input.txt', 'r') as file:
 def solveFor(reactions, fuelNeeded):
   needed = { "FUEL": fuelNeeded }
   leftovers = defaultdict(int)
-  limit = 0
 
-  while True and limit < 10000:
-    limit += 1
-    #print("Need:", needed, '--- leftovers:', dict(leftovers))
-
+  while True:
     if len(needed) == 1 and "ORE" in needed:
-      #print("\nFOUND NEEDS!")
       break
 
     newneeded = dict()
@@ -49,7 +44,6 @@ def solveFor(reactions, fuelNeeded):
           for ing in ingredients:
             alreadyneeded = 0 if ing[1] not in newneeded else newneeded[ing[1]]
             req = ing[0] * factor
-            #print(ing, '· factor', factor, '· req', req, '· plus', alreadyneeded)
             newneeded[ing[1]] = req + alreadyneeded
 
     needed = newneeded
@@ -57,11 +51,6 @@ def solveFor(reactions, fuelNeeded):
   return needed
 
 def solve(reactions):
-  print('REACTIONS:')
-  for k in reactions:
-    print(k, reactions[k])
-  print()
-
   trillion = 1_000_000_000_000
   fuel = 1
   tried = set()
@@ -69,19 +58,12 @@ def solve(reactions):
   while True:
     tried.add(fuel)
     needed = solveFor(reactions, fuel)
-    ore = 0 if "ORE" not in needed else needed["ORE"]
-    print(fuel, 'fuel requires', ore, 'ore')
-    
-    
-    if ore < trillion:
-      factor = trillion / ore
-      fuel = floor(fuel * factor)
-    else:
-      break
-      
+    ore = needed["ORE"]
+    if ore > trillion: break
+    fuel = floor(fuel * trillion / ore)
     if fuel in tried: break
-    tried.add(fuel)
-    
 
-print("Presumably a lucky answer, could've been off-by-one (or a few)")
-print(solve(reactions))
+  return fuel
+
+# Could well be a lucky answer though, off-by-one for other inputs..
+print("Part 2:", solve(reactions))
