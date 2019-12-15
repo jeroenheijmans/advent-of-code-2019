@@ -70,18 +70,20 @@ def runComputer(data, input):
 
 N, S, W, E, QUIT, AUTO = 1, 2, 3, 4, -1, -2
 WALL, OK, GOAL = 0, 1, 2
+opposites = { N: S, S: N, E: W, W: E }
 
 dxs = { N: 0, S: 0, W: -1, E: 1 }
 dys = { N: -1, S: 1, W: 0, E: 0 }
 
 controls = { 'j': W, 'i': N, 'l': E, 'k': S, 'q': QUIT, 'a': AUTO }
 
-def draw(walls, space, pos):
+def draw(walls, space, pos, goal):
   clear()
-  for y in range(-40, 40):
+  for y in range(-30, 30):
     line = ""
-    for x in range(-40, 40):
+    for x in range(-30, 30):
       if (x,y) == (0,0): line += 'S'
+      elif (x,y) == goal: line += 'X'
       elif (x,y) in walls: line += '█'
       elif (x,y) == pos: line += 'D'
       elif (x,y) in space: line += '·'
@@ -104,26 +106,63 @@ def solve(data):
   inputs = []
   runner = runComputer(data, inputs)
   x, y = 0, 0
+  goal = None
   walls = set()
   space = set([(0,0)])
+  exhausted = set([(0,0)])
   mode = 0
 
   while True:
+    counter = 0
+    for m in [N,E,S,W]:
+      inputs.append(m)
+      status = next(runner, 'halt')
+
+      x += dxs[m]
+      y += dys[m]
+
+      if status == WALL:
+        counter += 1
+        walls.add((x, y))
+        x -= dxs[m]
+        y -= dys[m]
+      elif status == OK:
+        space.add((x,y))
+        m = opposites[m]
+        x += dxs[m]
+        y += dys[m]
+        inputs.append(m)
+        _ = next(runner, 'halt')
+      elif status == GOAL:
+        goal = (x,y)
+        m = opposites[m]
+        x += dxs[m]
+        y += dys[m]
+        inputs.append(m)
+        _ = next(runner, 'halt')
+        draw(walls, space, (x, y), goal)
+
+    if counter == 3:
+      exhausted.add((x,y))
+
+    if mode == 0:
+      opts = {
+        W: (x - 1, y),
+        N: (x, y - 1),
+        E: (x + 1, y),
+        S: (x, y + 1),
+      }
+
+      candidates = [c for c in opts if opts[c] not in exhausted and opts[c] not in walls]
+      if len(candidates) == 1:
+        exhausted.add(opts[candidates[0]])
+      draw(walls, space, (x, y), goal)
+      print(candidates)
+      move = candidates[0]
 
     if mode == 1:
-      draw(walls, space, (x, y))
+      draw(walls, space, (x, y), goal)
       move = readmove()
-    else:
-      if (x,y) == (6, 14): move = W
-      elif (x,y) == (0, 6): move = W
-      elif (x,y) == (2, 6): move = S
-      elif (x,y) == (4, 10): move = E
-      elif (x,y) == (-10, 18): move = W
-      elif (x, y-1) not in walls and (x, y-1) not in space: move = N
-      elif (x, y+1) not in walls and (x, y+1) not in space: move = S
-      elif (x+1, y) not in walls and (x+1, y) not in space: move = E
-      elif (x-1, y) not in walls and (x-1, y) not in space: move = W
-      else: mode = 1
 
     if move == QUIT:
       break
@@ -133,7 +172,6 @@ def solve(data):
 
     inputs.append(move)
     status = next(runner, 'halt')
-    print("Status", status)
     if status == 'halt': break
 
     x += dxs[move]
@@ -146,9 +184,9 @@ def solve(data):
     elif status == OK:
       space.add((x,y))
     elif status == GOAL:
-      draw(walls, space, (x, y))
+      draw(walls, space, (x, y), goal)
       print('GOAL!')
-      break
+      mode = 1
 
   return "Spaces encountered", len(space)
 
