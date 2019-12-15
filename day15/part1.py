@@ -68,20 +68,21 @@ def runComputer(data, input):
     else:
       raise ValueError(f'opcode {opcode} from {program[i]}')
 
-N, S, W, E = 1, 2, 3, 4
+N, S, W, E, QUIT, AUTO = 1, 2, 3, 4, -1, -2
 WALL, OK, GOAL = 0, 1, 2
 
 dxs = { N: 0, S: 0, W: -1, E: 1 }
 dys = { N: -1, S: 1, W: 0, E: 0 }
 
-controls = { 'j': W, 'i': N, 'l': E, 'k': S, 'q': -1 }
+controls = { 'j': W, 'i': N, 'l': E, 'k': S, 'q': QUIT, 'a': AUTO }
 
 def draw(walls, space, pos):
   clear()
   for y in range(-40, 40):
     line = ""
     for x in range(-40, 40):
-      if (x,y) in walls: line += '█'
+      if (x,y) == (0,0): line += 'S'
+      elif (x,y) in walls: line += '█'
       elif (x,y) == pos: line += 'D'
       elif (x,y) in space: line += '·'
       else: line += '░'
@@ -89,7 +90,7 @@ def draw(walls, space, pos):
   print("At position", pos)
 
 def readmove():
-  move = -1
+  move = QUIT
   while move < 0:
     print("Please provide input")
     i = readchar.readchar().decode('utf-8')
@@ -104,14 +105,31 @@ def solve(data):
   runner = runComputer(data, inputs)
   x, y = 0, 0
   walls = set()
-  space = set((0,0))
+  space = set([(0,0)])
+  mode = 0
 
   while True:
-    draw(walls, space, (x, y))
 
-    move = readmove()
+    if mode == 1:
+      draw(walls, space, (x, y))
+      move = readmove()
+    else:
+      if (x,y) == (6, 14): move = W
+      elif (x,y) == (0, 6): move = W
+      elif (x,y) == (2, 6): move = S
+      elif (x,y) == (4, 10): move = E
+      elif (x,y) == (-10, 18): move = W
+      elif (x, y-1) not in walls and (x, y-1) not in space: move = N
+      elif (x, y+1) not in walls and (x, y+1) not in space: move = S
+      elif (x+1, y) not in walls and (x+1, y) not in space: move = E
+      elif (x-1, y) not in walls and (x-1, y) not in space: move = W
+      else: mode = 1
 
-    if move == -1: break
+    if move == QUIT:
+      break
+    if move == AUTO:
+      mode = 0
+      continue
 
     inputs.append(move)
     status = next(runner, 'halt')
@@ -128,10 +146,10 @@ def solve(data):
     elif status == OK:
       space.add((x,y))
     elif status == GOAL:
+      draw(walls, space, (x, y))
       print('GOAL!')
       break
-    
 
-  return "Not found"
+  return "Spaces encountered", len(space)
 
 print(solve(data))
