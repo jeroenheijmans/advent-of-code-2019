@@ -25,7 +25,7 @@ Here are the lessons learned for each day:
 12. TODO
 13. Magic: how much others can do with so little.
 14. Some languages have higher cognitive load than others.
-15. TODO
+15. **Investor's fallacy is a great source for technical debt**.
 16. TODO
 17. TODO
 18. TODO
