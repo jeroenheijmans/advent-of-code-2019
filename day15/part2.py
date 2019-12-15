@@ -1,5 +1,6 @@
 import os
 import readchar
+import networkx as nx
 from collections import defaultdict
 
 # Windows only :P
@@ -77,15 +78,16 @@ dys = { N: -1, S: 1, W: 0, E: 0 }
 
 controls = { 'j': W, 'i': N, 'l': E, 'k': S, 'q': QUIT, 'a': AUTO }
 
-def draw(walls, space, pos, goal):
+def draw(walls, space, exhausted, pos, goal):
   clear()
   for y in range(-30, 30):
     line = ""
     for x in range(-30, 30):
       if (x,y) == (0,0): line += 'S'
       elif (x,y) == goal: line += 'X'
-      elif (x,y) in walls: line += '█'
       elif (x,y) == pos: line += 'D'
+      elif (x,y) in walls: line += '█'
+      elif (x,y) in exhausted: line += ' '
       elif (x,y) in space: line += '·'
       else: line += '░'
     print(line)
@@ -110,10 +112,13 @@ def solve(data):
   walls = set()
   space = set([(0,0)])
   exhausted = set([(0,0)])
+  visited = set([(0,0)])
+  ends = set()
   mode = 0
 
   while True:
-    counter = 0
+    visited.add((x,y))
+
     for m in [N,E,S,W]:
       inputs.append(m)
       status = next(runner, 'halt')
@@ -122,8 +127,8 @@ def solve(data):
       y += dys[m]
 
       if status == WALL:
-        counter += 1
         walls.add((x, y))
+        exhausted.add((x,y))
         x -= dxs[m]
         y -= dys[m]
       elif status == OK:
@@ -140,29 +145,33 @@ def solve(data):
         y += dys[m]
         inputs.append(m)
         _ = next(runner, 'halt')
-        draw(walls, space, (x, y), goal)
+        draw(walls, space, exhausted, (x, y), goal)
 
-    if counter == 3:
-      exhausted.add((x,y))
+    # draw(walls, space, exhausted, (x, y), goal)
 
     if mode == 0:
       opts = {
-        W: (x - 1, y),
         N: (x, y - 1),
         E: (x + 1, y),
         S: (x, y + 1),
+        W: (x - 1, y),
       }
 
-      candidates = [c for c in opts if opts[c] not in exhausted and opts[c] not in walls]
+      candidates = [c for c in opts if opts[c] not in exhausted]
       if len(candidates) == 1:
-        exhausted.add(opts[candidates[0]])
-      draw(walls, space, (x, y), goal)
-      print(candidates)
-      move = candidates[0]
+        exhausted.add((x,y))
+      # print(candidates)
+      if len(candidates) == 0:
+        mode = 1
+      else:
+        move = candidates[0]
+      if opts[move] in visited and len(candidates) > 1:
+        move = candidates[1]
 
     if mode == 1:
-      draw(walls, space, (x, y), goal)
-      move = readmove()
+      draw(walls, space, exhausted, (x, y), goal)
+      break
+      # move = readmove()
 
     if move == QUIT:
       break
@@ -184,9 +193,37 @@ def solve(data):
     elif status == OK:
       space.add((x,y))
     elif status == GOAL:
-      draw(walls, space, (x, y), goal)
+      draw(walls, space, exhausted, (x, y), goal)
       print('GOAL!')
-      mode = 1
+      # mode = 1
+
+    counter = 0
+    for m in [N,E,S,W]:
+      tx = x + dxs[m]
+      ty = y + dys[m]
+      if (tx,ty) in exhausted: counter += 1
+    if counter >= 3:
+      # print("exhausting", (x,y))
+      ends.add((x,y))
+      exhausted.add((x,y))
+
+  graph = nx.Graph()
+  points = space.copy()
+  points.add(goal)
+  graph.add_nodes_from(points)
+  for p in points:
+    if (p[0] + 1, p[1]) in points: graph.add_edge(p, (p[0] + 1, p[1]))
+    if (p[0] - 1, p[1]) in points: graph.add_edge(p, (p[0] - 1, p[1]))
+    if (p[0], p[1] + 1) in points: graph.add_edge(p, (p[0], p[1] + 1))
+    if (p[0], p[1] - 1) in points: graph.add_edge(p, (p[0], p[1] - 1))
+  
+  lengths = set()
+  ends.add(goal)
+  for p in ends:
+    l = nx.shortest_path_length(graph, goal, p)
+    lengths.add(l)
+  
+  print("Part 2:", max(lengths))
 
   return "Spaces encountered", len(space)
 
