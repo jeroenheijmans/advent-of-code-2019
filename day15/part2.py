@@ -3,6 +3,11 @@ import readchar
 import networkx as nx
 from collections import defaultdict
 
+#### BEWARE HERE BE DEMONS!!
+## This is a non-cleaned solution. Some days things
+## just don't work out the way you want them :D, and
+## I haven't cleaned up yet.
+
 # Windows only :P
 clear = lambda: os.system('cls')
 
