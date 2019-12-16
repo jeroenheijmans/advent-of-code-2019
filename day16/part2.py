@@ -3,18 +3,18 @@ from collections import defaultdict
 def firsteight(freqs):
   return ''.join(list(map(str, freqs))[:8])
 
-def solve(input):
-  messageoffset = int(input[:7])
-  freqs = list(map(int, input))
+def solve(data, messageRepeat = 10000):
+  data = data * messageRepeat
+  messageoffset = int(data[:7])
+  freqs = list(map(int, data))
   pattern = [0, 1, 0, -1]
   maxlength = len(freqs)
 
   for step in range(100):
-    print(step)
+    if step % 10 == 0: print(step)
     newfreqs = []
 
     for i in range(maxlength):
-      print('  -', i)
       newf = 0
       repeats = i + 1
       for j in range(maxlength):
@@ -27,10 +27,10 @@ def solve(input):
     
     freqs = newfreqs
   
-  return firsteight(freqs[:messageoffset])
+  return firsteight(freqs[messageoffset:])
 
 
 with open('input.txt', 'r') as file:
   txt = file.read().splitlines()[0]
 
-print("Part 2:", solve(txt * 10000))
+print("Part 2:", solve(txt))
