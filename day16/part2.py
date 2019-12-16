@@ -3,7 +3,7 @@ from collections import defaultdict
 def firsteight(freqs):
   return ''.join(list(map(str, freqs))[:8])
 
-def solve(data, messageRepeat = 10000):
+def solve(data, messageRepeat = 15):
   data = data * messageRepeat
   messageoffset = int(data[:7])
   freqs = list(map(int, data))
@@ -26,6 +26,8 @@ def solve(data, messageRepeat = 10000):
       newfreqs.append(abs(newf) % 10)
     
     freqs = newfreqs
+
+  print(''.join(list(map(str, freqs))))
   
   return firsteight(freqs[messageoffset:])
 
@@ -33,4 +35,5 @@ def solve(data, messageRepeat = 10000):
 with open('input.txt', 'r') as file:
   txt = file.read().splitlines()[0]
 
+# 55555555 wrong, too high (guessed based on output middle section)
 print("Part 2:", solve(txt))
