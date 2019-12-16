@@ -72,4 +72,5 @@ def solve(input):
 
   return step
 
+# Not 209373549846 (guessed after running the brute force version (see branch) for 91805.5432 seconds :O - not good...)
 print("Part 2:", solve(data))
