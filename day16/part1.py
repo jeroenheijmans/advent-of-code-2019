@@ -12,7 +12,6 @@ def solve(input):
     newfreqs = []
 
     for i in range(maxlength):
-      # line = ""
       newf = 0
       j = 0
       for j in range(maxlength):
@@ -22,9 +21,6 @@ def solve(input):
         factor = pattern[pidx]
         newf += freqs[j] * factor
         
-        # line += f"{freqs[j]}*{str(factor).ljust(2, ' ')} + "
-      # line += f"= {abs(newf) % 10} ({newf})"
-      # print(line)
       newfreqs.append(abs(newf) % 10)
     
     freqs = newfreqs
@@ -35,5 +31,4 @@ def solve(input):
 with open('input.txt', 'r') as file:
   data = list(map(int, file.read().splitlines()[0]))
 
-# Not 3469461657
 print("Part 1:", solve(data))
