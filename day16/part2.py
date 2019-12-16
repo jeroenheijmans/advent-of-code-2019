@@ -1,3 +1,4 @@
+from time import time
 from collections import defaultdict
 
 def firsteight(freqs):
@@ -6,23 +7,36 @@ def firsteight(freqs):
 officialRepeatCount = 10000
 
 def solve(data, messageRepeat = officialRepeatCount):
+  start = time()
   data = data * messageRepeat
   messageoffset = int(data[:7])
   freqs = list(map(int, data))
   pattern = [0, 1, 0, -1]
   maxlength = len(freqs)
 
+  print('Prepping factor matrix at time', str(round(time() - start, 4)).ljust(7, "0"))
+
+  factorMatrix = []
+  for i in range(maxlength):
+    repeats = i + 1
+    newlist = []
+    factorMatrix.append(newlist)
+    for j in range(maxlength):
+      pidx = (j + 1) // repeats
+      pidx = pidx % 4
+      newlist.append(pattern[pidx])
+
+
   for step in range(100):
-    if step % 10 == 0: print(step)
+    print(str(step).ljust(3, ' '), 'time', str(round(time() - start, 4)).ljust(7, "0"))
+
     newfreqs = []
 
     for i in range(maxlength):
       newf = 0
       repeats = i + 1
-      for j in range(1):
-        pidx = (j + 1) // repeats
-        pidx = pidx % 4
-        factor = pattern[pidx]
+      for j in range(maxlength):
+        factor = factorMatrix[i][j]
         newf += freqs[j] * factor
         
       newfreqs.append(abs(newf) % 10)
@@ -35,7 +49,6 @@ def solve(data, messageRepeat = officialRepeatCount):
     file.write(''.join(list(map(str, freqs))))
   
   return firsteight(freqs[messageoffset:])
-
 
 with open('input.txt', 'r') as file:
   txt = file.read().splitlines()[0]
