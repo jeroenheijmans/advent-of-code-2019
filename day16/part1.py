@@ -1,7 +1,7 @@
 from collections import defaultdict
 
-def firstten(freqs):
-  return ''.join(list(map(str, freqs))[:10])
+def firsteight(freqs):
+  return ''.join(list(map(str, freqs))[:8])
 
 def solve(input):
   freqs = data.copy()
@@ -29,7 +29,7 @@ def solve(input):
     
     freqs = newfreqs
   
-  return firstten(freqs)
+  return firsteight(freqs)
 
 
 with open('input.txt', 'r') as file:
