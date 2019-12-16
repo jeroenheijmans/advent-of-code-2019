@@ -3,7 +3,9 @@ from collections import defaultdict
 def firsteight(freqs):
   return ''.join(list(map(str, freqs))[:8])
 
-def solve(data, messageRepeat = 15):
+officialRepeatCount = 10000
+
+def solve(data, messageRepeat = officialRepeatCount):
   data = data * messageRepeat
   messageoffset = int(data[:7])
   freqs = list(map(int, data))
@@ -17,7 +19,7 @@ def solve(data, messageRepeat = 15):
     for i in range(maxlength):
       newf = 0
       repeats = i + 1
-      for j in range(maxlength):
+      for j in range(1):
         pidx = (j + 1) // repeats
         pidx = pidx % 4
         factor = pattern[pidx]
@@ -27,7 +29,10 @@ def solve(data, messageRepeat = 15):
     
     freqs = newfreqs
 
-  print(''.join(list(map(str, freqs))))
+  print('first 100 digits (full result in file)', ''.join(list(map(str, freqs[:100]))))
+  
+  with  open('temp.txt', 'w') as file:
+    file.write(''.join(list(map(str, freqs))))
   
   return firsteight(freqs[messageoffset:])
 
