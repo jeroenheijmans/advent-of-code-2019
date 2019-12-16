@@ -7,12 +7,14 @@ def firsteight(freqs):
 officialRepeatCount = 10000
 
 def solve(data, messageRepeat = officialRepeatCount):
-  messageoffset = int(data[:7]) % len(data)
-  freqs = list(map(int, data))
+  messageoffset = int(data[:7])
+  freqs = list(map(int, data)) * messageRepeat
   pattern = [0, 1, 0, -1]
   maxlength = len(freqs)
+  start = time()
 
-  for _ in range(100):
+  for step in range(100):
+    print('step', str(step).ljust(2, ' '), 'time', str(round(time() - start, 4)).ljust(7, "0"))
     newfreqs = []
 
     for i in range(maxlength):
