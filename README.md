@@ -27,7 +27,7 @@ Here are the lessons learned for each day:
 14. Some languages have higher cognitive load than others.
 15. **Investor's fallacy is a great source for technical debt**.
 16. TODO
-17. TODO
+17. Personal biases hurt debugging.
 18. TODO
 19. TODO
 20. TODO
