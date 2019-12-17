@@ -26,20 +26,17 @@ def draw(freqs):
   
   print(buffer)
 
-
-def solve(data, messageRepeat = 3):
-  messageoffset = 0 # int(data[:7])
+def solve(data, messageRepeat = officialRepeatCount):
+  messageoffset = int(data[:7])
   freqs = list(map(int, data)) * messageRepeat
   pattern = [0, 1, 0, -1]
   maxlength = len(freqs)
   start = time()
+  versions = []
 
   for step in range(100):
-    draw(freqs)
-    print()
     print('step', str(step).ljust(2, ' '), 'time', str(round(time() - start, 4)).ljust(7, "0"))
-    # print("press enter to continue")
-    # input()
+    versions.append(freqs.copy())
 
     newfreqs = []
 
@@ -47,20 +44,24 @@ def solve(data, messageRepeat = 3):
       newFrequency = 0
       j = 0
       repeats = i + 1
-      for j in range(repeats - 1, maxlength):
-        pidx = (j + 1) // repeats
-        pidx = pidx % 4
-        factor = pattern[pidx]
-        newFrequency += freqs[j] * factor
+      if i >= messageoffset:
+        for j in range(repeats - 1, maxlength):
+          pidx = (j + 1) // repeats
+          pidx = pidx % 4
+          factor = pattern[pidx]
+          newFrequency += freqs[j] * factor
         
       newfreqs.append(abs(newFrequency) % 10)
     
     freqs = newfreqs
+
+  with open('temp.txt', 'w', newline='') as file:
+    for v in versions:
+      file.write(''.join(list(map(str, v))) + '\n')
   
   return firsteight(freqs[messageoffset:])
 
 with open('input.txt', 'r') as file:
   txt = file.read().splitlines()[0]
 
-# 43852383 wrong, too high!
 print("Part 2:", solve(txt))
