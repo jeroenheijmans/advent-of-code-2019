@@ -81,17 +81,10 @@ def draw(level):
 TILES = [35, 46, 94, 118, 60, 62 ]
 NEWLINE = 10
 
-def neighbors(point, level):
-  return [
-    level[(point[0] - 1, point[1])],
-    level[(point[0] + 1, point[1])],
-    level[(point[0], point[1] - 1)],
-    level[(point[0], point[1] + 1)],
-  ]
-
 def solve(data):
   data[0] = 2
 
+  # Hardcoded from analyzing the part 1 drawn level:
   moves = [
     "A,B,A,B,C,C,B,A,C,A",
     "L,10,R,8,R,6,R,10",
@@ -99,21 +92,13 @@ def solve(data):
     "L,10,R,8,R,8",
     "n"
   ]
-  inputs = []
-  for line in moves:
-    extra = []
-    for c in line:
-      extra.append(ord(c))
-    extra.append(NEWLINE)
-    inputs += extra
-    print("DEBUG:", extra)
-
+  
+  inputs = [ord(c) for line in moves for c in (line + "\n")]
   inputs = inputs[::-1] # IntCode requires a stack :P
 
-  print("".join([chr(c) for c in inputs]))
-  
   runner = runComputer(data, inputs)
   x, y = 0, 0
+  score = 0
   level = defaultdict(lambda:"?")
 
   while True:
@@ -127,13 +112,15 @@ def solve(data):
       level[(x,y)] = chr(status)
       x += 1
     elif status > 512:
-      print("Space Dust Collected:", status) # Score!
+      score = status
       break
     else:
       level[(x,y)] = chr(status)
       x += 1
 
-  draw(level)
+  # draw(level)
+
+  return score
 
 with open('input.txt', 'r') as file:
   raw = list(map(int, file.read().splitlines()[0].split(",")))
