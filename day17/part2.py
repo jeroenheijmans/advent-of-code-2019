@@ -108,6 +108,8 @@ def solve(data):
     inputs += extra
     print("DEBUG:", extra)
 
+  inputs = inputs[::-1] # IntCode requires a stack :P
+
   print("".join([chr(c) for c in inputs]))
   
   runner = runComputer(data, inputs)
@@ -124,14 +126,14 @@ def solve(data):
     elif status in TILES:
       level[(x,y)] = chr(status)
       x += 1
+    elif status > 512:
+      print("Space Dust Collected:", status) # Score!
+      break
     else:
-      # print(status) # Score?
       level[(x,y)] = chr(status)
       x += 1
 
   draw(level)
-
-  return "no result"
 
 with open('input.txt', 'r') as file:
   raw = list(map(int, file.read().splitlines()[0].split(",")))
