@@ -65,7 +65,7 @@ def runComputer(data, input):
       raise ValueError(f'opcode {opcode} from {program[i]}')
 
 def draw(level):
-  clear()
+  # clear()
   
   minx = min([x for x, _ in level.keys()])
   miny = min([y for _, y in level.keys()])
@@ -81,7 +81,6 @@ def draw(level):
 DIRS = [94, 118, 60, 62 ]
 SCAFFOLD = "█"
 SPACE = "·"
-COMMA = 44
 NEWLINE = 10
 
 def neighbors(point, level):
@@ -97,19 +96,27 @@ def solve(data):
 
   NEWLINE = 10
 
-  inputs = [
-    ord("A"),44,ord("B"),44,ord("A"),44,ord("B"),44,ord("C"),44,ord("C"),44,ord("B"),44,ord("A"),44,ord("C"),44,ord("A"),44,NEWLINE,
-    ord("L"),44,10,44,ord("R"),44,8,44,ord("R"),44,6,44,ord("R"),44,10,44,NEWLINE,
-    ord("L"),44,12,44,ord("R"),44,8,44,ord("L"),44,12,44,NEWLINE,
-    ord("L"),44,10,44,ord("R"),44,8,44,ord("R"),44,8,44,NEWLINE,
-    ord("n"),44,NEWLINE
+  moves = [
+    "A,B,A,B,C,C,B,A,C,A",
+    "L,10,R,8,R,6,R,10",
+    "L,12,R,8,L,12",
+    "L,10,R,8,R,8",
+    "n"
   ]
-  print(inputs)
-  input()
+  inputs = []
+  for line in moves:
+    extra = []
+    for c in line:
+      extra.append(ord(c))
+    inputs += extra + [NEWLINE]
+    print("DEBUG:", extra)
+
+  print("DEBUG:", inputs)
+  print("DEBUG:\n", "".join([chr(c) for c in inputs]))
+  
   runner = runComputer(data, inputs)
   x, y = 0, 0
   level = defaultdict(lambda:"?")
-
 
   while True:
     status = next(runner, 'halt')
@@ -128,7 +135,6 @@ def solve(data):
       level[(x,y)] = chr(status)
       x += 1
     else:
-      print("OUTPUT", status, chr(status))
       level[(x,y)] = chr(status)
       x += 1
 
