@@ -72,15 +72,17 @@ def draw(level):
   maxx = max([x for x, _ in level.keys()])
   maxy = max([y for _, y in level.keys()])
 
-  for y in range(miny, maxy):
+  for y in range(miny, maxy+1):
     line = ""
-    for x in range(minx, maxx):
+    for x in range(minx, maxx+1):
       line += level[(x,y)]
     print(line)
 
+DIRS = [94, 118, 60, 62 ]
 SCAFFOLD = "█"
 SPACE = "·"
-N,E,S,W = "^",">","v","<"
+COMMA = 44
+NEWLINE = 10
 
 def neighbors(point, level):
   return [
@@ -92,10 +94,22 @@ def neighbors(point, level):
 
 def solve(data):
   data[0] = 2
-  inputs = []
+
+  NEWLINE = 10
+
+  inputs = [
+    ord("A"),44,ord("B"),44,ord("A"),44,ord("B"),44,ord("C"),44,ord("C"),44,ord("B"),44,ord("A"),44,ord("C"),44,ord("A"),44,NEWLINE,
+    ord("L"),44,10,44,ord("R"),44,8,44,ord("R"),44,6,44,ord("R"),44,10,44,NEWLINE,
+    ord("L"),44,12,44,ord("R"),44,8,44,ord("L"),44,12,44,NEWLINE,
+    ord("L"),44,10,44,ord("R"),44,8,44,ord("R"),44,8,44,NEWLINE,
+    ord("n"),44,NEWLINE
+  ]
+  print(inputs)
+  input()
   runner = runComputer(data, inputs)
   x, y = 0, 0
   level = defaultdict(lambda:"?")
+
 
   while True:
     status = next(runner, 'halt')
@@ -104,12 +118,19 @@ def solve(data):
     if status == 35:
       level[(x,y)] = SCAFFOLD
       x += 1
-    if status == 46:
+    elif status == 46:
       level[(x,y)] = SPACE
       x += 1
-    if status == 10:
+    elif status == 10:
       y += 1
       x = 0
+    elif status in DIRS:
+      level[(x,y)] = chr(status)
+      x += 1
+    else:
+      print("OUTPUT", status, chr(status))
+      level[(x,y)] = chr(status)
+      x += 1
 
   draw(level)
 
