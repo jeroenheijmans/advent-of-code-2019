@@ -78,9 +78,7 @@ def draw(level):
       line += level[(x,y)]
     print(line)
 
-DIRS = [94, 118, 60, 62 ]
-SCAFFOLD = "█"
-SPACE = "·"
+TILES = [35, 46, 94, 118, 60, 62 ]
 NEWLINE = 10
 
 def neighbors(point, level):
@@ -94,8 +92,6 @@ def neighbors(point, level):
 def solve(data):
   data[0] = 2
 
-  NEWLINE = 10
-
   moves = [
     "A,B,A,B,C,C,B,A,C,A",
     "L,10,R,8,R,6,R,10",
@@ -108,11 +104,11 @@ def solve(data):
     extra = []
     for c in line:
       extra.append(ord(c))
-    inputs += extra + [NEWLINE]
+    extra.append(NEWLINE)
+    inputs += extra
     print("DEBUG:", extra)
 
-  print("DEBUG:", inputs)
-  print("DEBUG:\n", "".join([chr(c) for c in inputs]))
+  print("".join([chr(c) for c in inputs]))
   
   runner = runComputer(data, inputs)
   x, y = 0, 0
@@ -122,19 +118,14 @@ def solve(data):
     status = next(runner, 'halt')
     if status == 'halt': break
 
-    if status == 35:
-      level[(x,y)] = SCAFFOLD
-      x += 1
-    elif status == 46:
-      level[(x,y)] = SPACE
-      x += 1
-    elif status == 10:
+    if status == NEWLINE:
       y += 1
       x = 0
-    elif status in DIRS:
+    elif status in TILES:
       level[(x,y)] = chr(status)
       x += 1
     else:
+      # print(status) # Score?
       level[(x,y)] = chr(status)
       x += 1
 
