@@ -1,12 +1,33 @@
+import os
 from time import time
 from collections import defaultdict
+
+# Windows only :P
+clear = lambda: os.system('cls')
 
 def firsteight(freqs):
   return ''.join(list(map(str, freqs))[:8])
 
 officialRepeatCount = 10000
 
-def solve(data, messageRepeat = 1):
+def draw(freqs):
+  clear()
+  maxlen = len(freqs)
+  buffer = ""
+  width = 60
+  full = False
+  for n in range(width * width):
+    if n >= maxlen:
+      full = True
+      break
+    if n % width == 0: buffer += "\n"
+    buffer += " " + str(freqs[n])
+  if not full: buffer = buffer[:-7] + " ...etc"
+  
+  print(buffer)
+
+
+def solve(data, messageRepeat = 3):
   messageoffset = 0 # int(data[:7])
   freqs = list(map(int, data)) * messageRepeat
   pattern = [0, 1, 0, -1]
@@ -14,7 +35,12 @@ def solve(data, messageRepeat = 1):
   start = time()
 
   for step in range(100):
+    draw(freqs)
+    print()
     print('step', str(step).ljust(2, ' '), 'time', str(round(time() - start, 4)).ljust(7, "0"))
+    # print("press enter to continue")
+    # input()
+
     newfreqs = []
 
     for i in range(maxlength):
