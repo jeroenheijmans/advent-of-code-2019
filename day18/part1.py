@@ -13,26 +13,33 @@ def neighbors(level, p):
 def drawascii(level):
   maxx = max([x for x,_ in level.keys()])
   maxy = max([y for _,y in level.keys()])
-  for y in range(maxy):
+  for y in range(maxy+1):
     line = ""
-    for x in range(maxx):
+    for x in range(maxx+1):
       line += level[(x,y)]
     print(line)
 
 def draw(g, spaces, doors, keys):
-  pos=nx.spring_layout(g)
-  nx.draw_networkx_nodes(g,pos,nodelist=spaces,node_color='#00aaee')
-  nx.draw_networkx_nodes(g,pos,nodelist=doors.values(),node_color='#ee0033')
-  nx.draw_networkx_nodes(g,pos,nodelist=keys.values(),node_color='#33ee66')
-  nx.draw_networkx_edges(g,pos)
-  nx.draw_networkx_labels(g, pos)
+  pos = nx.get_node_attributes(g, 'pos')
+  nx.draw_networkx_nodes(g, pos, node_size=20, nodelist=spaces, node_color='#00aaee', alpha=0.4)
+  nx.draw_networkx_nodes(g, pos, node_size=100, nodelist=doors.values(), node_color='#ee0033')
+  nx.draw_networkx_nodes(g, pos, node_size=100, nodelist=keys.values(), node_color='#33ee66')
+  nx.draw_networkx_edges(g, pos)
+
+  labels = nx.get_node_attributes(g,'label')
+  nx.draw_networkx_labels(g, pos, labels=labels, font_size=11, alpha=0.4)
+  
+  labels = nx.get_edge_attributes(g,'weight')
+  nx.draw_networkx_edge_labels(g, pos, font_size=7, edge_labels=labels)
+
   plt.show()
 
 def createGameFrom(level, position):
   keepgoing = True
   curgraph = nx.Graph()
-  curgraph.add_node(position)
+  curgraph.add_node(position, pos=position)
   visited = set()
+  spaces = set()
   reachablekeys = dict()
   reachabledoors = dict()
   tovisit = set([position])
@@ -43,24 +50,38 @@ def createGameFrom(level, position):
         if n in visited or level[n] == "#":
           continue
         
-        # TODO: for non-intersection-points, continue building a weighted graph
+        weight = 1
+        while True:
+          nextneighbors = neighbors(level, n)
+          others = [x for x in nextneighbors if level[x] == "." and x != p and x not in visited]
+          if len(others) != 1:
+            break
+          visited.add(n)
+          n = others[0]
+          weight += 1
 
-        curgraph.add_node(n)
-        curgraph.add_edge(p, n)
+        label = '' if level[n] == '.' else level[n]
+        curgraph.add_node(n, pos=n, label=label)
+        curgraph.add_edge(p, n, weight=weight)
         if level[n] == ".":
           nextvisits.add(n)
           visited.add(n)
+          spaces.add(n)
         elif level[n].islower():
+          print("Adding", level[n])
           nextvisits.add(n)
           visited.add(n)
           reachablekeys[level[n]] = n
         else:
+          print("Adding2", level[n])
+          nextvisits.add(n)
+          visited.add(n)
           reachabledoors[level[n].lower()] = n
 
     keepgoing = len(nextvisits) > 0
     tovisit = nextvisits
     nextvisits = set()
-  return curgraph, visited, reachabledoors, reachablekeys
+  return curgraph, spaces, reachabledoors, reachablekeys
 
 def solve(data):
   x, y = 0, 0
@@ -73,21 +94,10 @@ def solve(data):
     x = 0
     y += 1
 
-  # drawascii(level)
-
-  curgraph, visited, reachabledoors, reachablekeys = createGameFrom(level, position)
-
-  # closestdist = 100000
-  # closestletter = None
-  # for letter in set(reachabledoors.keys()) & set(reachablekeys.keyu()):
-  #   door = reachabledoors[letter]
-  #   key = reachablekeys[letter]
-  #   keydist = nx.shortest_path_length(curgraph, position, key)
-  #   doordist = nx.shortest_path_length(curgraph, key, door)
-  #   totaldist = keydist + doordist
-
-  # Need to condense "visited" first, use a dist instead of single steps
-  # draw(curgraph, visited, reachabledoors, reachablekeys)
+  curgraph, spaces, reachabledoors, reachablekeys = createGameFrom(level, position)
+  print(reachablekeys.values())
+  drawascii(level)
+  draw(curgraph, spaces, reachabledoors, reachablekeys)
 
   return None
 
