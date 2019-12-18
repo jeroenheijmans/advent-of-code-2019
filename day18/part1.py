@@ -91,31 +91,92 @@ def createGameFrom(level, position):
     tovisit = nextvisits
     nextvisits = set()
 
-  # Remove leaves without doors and keys:
-  keepgoing = True
-  while keepgoing:
-    keepgoing = False
-    leaves = [x for x in curgraph.nodes() if len(list(curgraph.neighbors(x))) == 1]
-    for leaf in leaves:
-      if level[leaf] == ".":
-        keepgoing = True
-        curgraph.remove_node(leaf)
-        spaces.remove(leaf)
+  # # Remove leaves without doors and keys:
+  # keepgoing = True
+  # while keepgoing:
+  #   keepgoing = False
+  #   leaves = [x for x in curgraph.nodes() if len(list(curgraph.neighbors(x))) == 1]
+  #   for leaf in leaves:
+  #     if level[leaf] == ".":
+  #       keepgoing = True
+  #       curgraph.remove_node(leaf)
+  #       spaces.remove(leaf)
   
-  # Another round of condensing hallways:
-  keepgoing = True
-  while keepgoing:
-    keepgoing = False
-    potentials = [x for x in curgraph.nodes() if len(list(curgraph.neighbors(x))) == 2]
-    for pot in potentials:
-      others = list(curgraph.neighbors(pot))
-      if pot in spaces and len(others) == 2:
-        weight = curgraph.edges[others[0], pot]['weight'] + curgraph.edges[others[1], pot]['weight']
-        curgraph.remove_node(pot)
-        spaces.remove(pot)
-        curgraph.add_edge(others[0], others[1], weight=weight)
+  # # Another round of condensing hallways:
+  # keepgoing = True
+  # while keepgoing:
+  #   keepgoing = False
+  #   potentials = [x for x in curgraph.nodes() if len(list(curgraph.neighbors(x))) == 2]
+  #   for pot in potentials:
+  #     others = list(curgraph.neighbors(pot))
+  #     if pot in spaces and len(others) == 2:
+  #       weight = curgraph.edges[others[0], pot]['weight'] + curgraph.edges[others[1], pot]['weight']
+  #       curgraph.remove_node(pot)
+  #       spaces.remove(pot)
+  #       curgraph.add_edge(others[0], others[1], weight=weight)
 
   return curgraph, spaces, doors, keys
+
+def recursePath(level, graph: nx.Graph, allkeys, mykeys, position, origin):
+  print("Recursing on", "".join(mykeys), "vs", "".join(sorted(allkeys)))
+  newkeys = mykeys.copy()
+  if level[position].islower():
+    newkeys.add(level[position])
+  elif position == origin:
+    print("Starting recursion from @ at hardcoded input position", position)
+  else:
+    raise ValueError(f"Unexpected recursion at {position} char {level[position]}")
+  
+  # Recursion ends when we have all keys:
+  if allkeys == newkeys:
+    # print("Ending recursion with allkeys!")
+    return 0
+  
+  # Find reachable, needed keys:
+  reachableNeededKeys = set()
+  visited = set([position])
+  tovisit = set([position])
+  nextvisits = set()
+  keepgoing = True
+  while keepgoing:
+    keepgoing = False
+    for p in tovisit:
+      others = graph.neighbors(p)
+      for other in others:
+        if other in visited:
+          continue
+        visited.add(other)
+        if level[other] == ".":
+          nextvisits.add(other) # open space means just searching on
+        elif level[other].isupper():
+          if level[other].lower() in newkeys:
+            nextvisits.add(other) # we have a key for this door!
+        elif level[other].islower():
+          if level[other] not in newkeys:
+            reachableNeededKeys.add(other) # found a new key! recurse here
+          else:
+            nextvisits.add(other) # key already owned
+        else:
+          raise ValueError("Can't continue at", p)
+    
+    keepgoing = len(tovisit) > 0
+    tovisit = nextvisits
+    nextvisits = set()
+
+  # print([(p,level[p]) for p in reachableNeededKeys])
+
+  paths = []
+  for k in list(reachableNeededKeys)[:1]:
+    if position == origin:
+      print("Pathing from", position, "to", k, "for key", level[k], "while having keys", "".join(sorted(newkeys)))
+    path = nx.single_source_dijkstra(graph, position, k, weight='weight')
+    # print (p, k, level[k], path)
+    pathweight = path[0] # path[1] is list of point-tuples in order
+    innerresult = recursePath(level, graph, allkeys, newkeys, k, origin)
+    newweight = innerresult + pathweight
+    paths.append(newweight)
+
+  return min(paths)
 
 def solve(data):
   x, y = 0, 0
@@ -128,14 +189,18 @@ def solve(data):
     x = 0
     y += 1
 
+  origin = position
   curgraph, spaces, doors, keys = createGameFrom(level, position)
-  
-  # drawascii(level)
-  draw(curgraph, spaces, doors, keys, position)
 
-  return None
+  allkeys = set(keys.keys())
+  mykeys = set()
+  
+  # draw(curgraph, spaces, doors, keys, position)
+
+  return recursePath(level, curgraph, allkeys, mykeys, position, origin)
 
 with open('input.txt', 'r') as file:
   raw = file.read().splitlines()
 
+# Not 7071 - too high :'(
 print("Part 1:", solve(raw))
