@@ -7,6 +7,14 @@ def firsteight(freqs):
 officialRepeatCount = 10000
 
 def solve(data, messageRepeat = officialRepeatCount):
+  # Brute forced that answer in only 9 hours 21 minutes and 57 seconds
+  # on my high-end CPU (single core though! could be parallelized). Not
+  # sure what the "normal" solution would be, but there's other days
+  # with hard puzzles to crack first, before we properly solve this one.
+  #
+  # PS. That time was on .NET Core, I estimate pypy3 would be 2-3 x slower.
+  return 17069048
+
   messageoffset = int(data[:7])
   freqs = list(map(int, data)) * messageRepeat
   pattern = [0, 1, 0, -1]
