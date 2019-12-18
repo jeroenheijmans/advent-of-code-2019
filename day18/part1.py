@@ -41,42 +41,48 @@ def draw(g, spaces, doors, keys, position):
 
 def createGameFrom(level, position):
   keepgoing = True
-  curgraph = nx.Graph()
-  curgraph.add_node(position, label="@", pos=(position[0], -position[1]))
   visited = set([position])
+  tovisit = set([position])
+  nextvisits = set()
   spaces = set()
   keys = dict()
   doors = dict()
-  tovisit = set([position])
-  nextvisits = set()
+  
+  # Start by marking the starting position:
+  curgraph = nx.Graph()
+  curgraph.add_node(position, label="@", pos=(position[0], -position[1]))
+
   while keepgoing:
     for p in tovisit:
       for n in neighbors(level, p):
         if n in visited or level[n] in ["#", "@"]:
           continue
+
         if level[n] in ["."]:
+          # Try to condense hallways:
           weight = 1
           while True:
             nextneighbors = neighbors(level, n)
             others = [x for x in nextneighbors if x != p and x != n and x not in visited]
             if len(others) != 1 or level[others[0]] != ".": break
-            # print("skipping through", n, "to", others)
             visited.add(n)
             n = others[0]
             weight += 1
+          # Add empty space:
           nextvisits.add(n)
           visited.add(n)
           spaces.add(n)
+
         elif level[n].islower():
           nextvisits.add(n)
           visited.add(n)
           keys[level[n]] = n
+        
         else:
           nextvisits.add(n)
           visited.add(n)
           doors[level[n].lower()] = n
 
-        # print("adding node", n, level[n])
         label = '' if level[n] == '.' else level[n]
         curgraph.add_node(n, pos=(n[0], -n[1]), label=label)
         curgraph.add_edge(p, n, weight=weight)
@@ -84,6 +90,18 @@ def createGameFrom(level, position):
     keepgoing = len(nextvisits) > 0
     tovisit = nextvisits
     nextvisits = set()
+
+  # Remove leaves without doors and keys:
+  keepgoing = True
+  while keepgoing:
+    keepgoing = False
+    leaves = [x for x in curgraph.nodes() if len(list(curgraph.neighbors(x))) == 1]
+    for leaf in leaves:
+      if level[leaf] == ".":
+        keepgoing = True
+        curgraph.remove_node(leaf)
+        spaces.remove(leaf)
+
   return curgraph, spaces, doors, keys
 
 def solve(data):
@@ -99,20 +117,7 @@ def solve(data):
 
   curgraph, spaces, doors, keys = createGameFrom(level, position)
   
-  keepgoing = True
-  while keepgoing:
-    keepgoing = False
-    leaves = [x for x in curgraph.nodes() if len(list(curgraph.neighbors(x))) == 1]
-    for leaf in leaves:
-      if level[leaf] == ".":
-        keepgoing = True
-        curgraph.remove_node(leaf)
-        spaces.remove(leaf)
-
-
   # drawascii(level)
-  print(len(doors), 'Doors:', doors.keys())
-  print(len(keys), 'Keys:', keys.keys())
   draw(curgraph, spaces, doors, keys, position)
 
   return None
