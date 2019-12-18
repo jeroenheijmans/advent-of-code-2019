@@ -21,9 +21,10 @@ def drawascii(level):
       line += level[(x,y)]
     print(line)
 
-def draw(g, spaces, doors, keys):
+def draw(g, spaces, doors, keys, position):
   pos = nx.get_node_attributes(g, 'pos')
   
+  nx.draw_networkx_nodes(g, pos, node_size=200, nodelist=[position], node_color='#eeee00', alpha=0.9)
   nx.draw_networkx_nodes(g, pos, node_size=30, nodelist=spaces, node_color='#00aaee', alpha=0.8)
   nx.draw_networkx_nodes(g, pos, node_size=150, nodelist=doors.values(), node_color='#ee0033', alpha=0.8)
   nx.draw_networkx_nodes(g, pos, node_size=150, nodelist=keys.values(), node_color='#33ee66', alpha=0.8)
@@ -41,8 +42,8 @@ def draw(g, spaces, doors, keys):
 def createGameFrom(level, position):
   keepgoing = True
   curgraph = nx.Graph()
-  curgraph.add_node(position, pos=position)
-  visited = set()
+  curgraph.add_node(position, label="@", pos=(position[0], -position[1]))
+  visited = set([position])
   spaces = set()
   keys = dict()
   doors = dict()
@@ -51,32 +52,31 @@ def createGameFrom(level, position):
   while keepgoing:
     for p in tovisit:
       for n in neighbors(level, p):
-        if n in visited or level[n] == "#":
+        if n in visited or level[n] in ["#", "@"]:
           continue
-        if level[n] == ".":
+        if level[n] in ["."]:
           weight = 1
           while True:
             nextneighbors = neighbors(level, n)
-            others = [x for x in nextneighbors if x != p and x != n and x not in visited and not level[x] == "#"]
-            if len([x for x in others if level[x] == "."]) != 1: break
+            others = [x for x in nextneighbors if x != p and x != n and x not in visited]
+            if len(others) != 1 or level[others[0]] != ".": break
+            # print("skipping through", n, "to", others)
             visited.add(n)
             n = others[0]
             weight += 1
-          if level[n] == "#": raise ValueError("Problem at " + str(n))
           nextvisits.add(n)
           visited.add(n)
           spaces.add(n)
         elif level[n].islower():
-          if level[n] == "#": raise ValueError("Problem at " + str(n))
           nextvisits.add(n)
           visited.add(n)
           keys[level[n]] = n
         else:
-          if level[n] == "#": raise ValueError("Problem at " + str(n))
           nextvisits.add(n)
           visited.add(n)
           doors[level[n].lower()] = n
 
+        # print("adding node", n, level[n])
         label = '' if level[n] == '.' else level[n]
         curgraph.add_node(n, pos=(n[0], -n[1]), label=label)
         curgraph.add_edge(p, n, weight=weight)
@@ -100,9 +100,9 @@ def solve(data):
   curgraph, spaces, doors, keys = createGameFrom(level, position)
   
   # drawascii(level)
-  print('Doors:', doors)
-  print('Keys:', keys)
-  draw(curgraph, spaces, doors, keys)
+  print(len(doors), 'Doors:', doors.keys())
+  print(len(keys), 'Keys:', keys.keys())
+  draw(curgraph, spaces, doors, keys, position)
 
   return None
 
