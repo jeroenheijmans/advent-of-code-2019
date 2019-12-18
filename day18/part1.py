@@ -101,6 +101,19 @@ def createGameFrom(level, position):
         keepgoing = True
         curgraph.remove_node(leaf)
         spaces.remove(leaf)
+  
+  # Another round of condensing hallways:
+  keepgoing = True
+  while keepgoing:
+    keepgoing = False
+    potentials = [x for x in curgraph.nodes() if len(list(curgraph.neighbors(x))) == 2]
+    for pot in potentials:
+      others = list(curgraph.neighbors(pot))
+      if pot in spaces and len(others) == 2 and others[0] in spaces and others[1] in spaces:
+        weight = curgraph.edges[others[0], pot]['weight'] + curgraph.edges[others[1], pot]['weight']
+        curgraph.remove_node(pot)
+        spaces.remove(pot)
+        curgraph.add_edge(others[0], others[1], weight=weight)
 
   return curgraph, spaces, doors, keys
 
