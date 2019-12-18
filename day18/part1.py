@@ -99,6 +99,17 @@ def solve(data):
 
   curgraph, spaces, doors, keys = createGameFrom(level, position)
   
+  keepgoing = True
+  while keepgoing:
+    keepgoing = False
+    leaves = [x for x in curgraph.nodes() if len(list(curgraph.neighbors(x))) == 1]
+    for leaf in leaves:
+      if level[leaf] == ".":
+        keepgoing = True
+        curgraph.remove_node(leaf)
+        spaces.remove(leaf)
+
+
   # drawascii(level)
   print(len(doors), 'Doors:', doors.keys())
   print(len(keys), 'Keys:', keys.keys())
