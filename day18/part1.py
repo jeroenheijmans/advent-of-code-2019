@@ -95,7 +95,7 @@ def createGameFrom(level, position):
   keepgoing = True
   while keepgoing:
     keepgoing = False
-    leaves = [x for x in curgraph.nodes() if len(list(curgraph.neighbors(x))) == 1]
+    leaves = [x for x in curgraph.nodes() if x != position and len(list(curgraph.neighbors(x))) == 1]
     for leaf in leaves:
       if level[leaf] == ".":
         keepgoing = True
@@ -167,7 +167,8 @@ def recursePath(level, graph: nx.Graph, allkeys, mykeys, position, origin):
 
   paths = []
   sortedtargets = sorted(reachableNeededKeys, key=lambda x: x[1])
-  for k, pathweight in sortedtargets[:2]:
+  sortedtargets = sortedtargets[:1] + sortedtargets[-1:] if position == origin else sortedtargets[:1]
+  for k, pathweight in sortedtargets:
     if len(newkeys) < 5:
       print(len(newkeys), "Pathing from", position, "to", k, "for key", level[k], "while having keys", "".join(sorted(newkeys)))
     innerresult = recursePath(level, graph, allkeys, newkeys, k, origin)
@@ -205,4 +206,5 @@ with open('input.txt', 'r') as file:
 # Not 4906 -- too high yet again
 # Not 4674
 # Not 3976
+# Not 4208
 print("Part 1:", solve(raw))
