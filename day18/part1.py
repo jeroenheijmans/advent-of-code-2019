@@ -22,11 +22,45 @@ def drawascii(level):
 def draw(g, spaces, doors, keys):
   pos=nx.spring_layout(g)
   nx.draw_networkx_nodes(g,pos,nodelist=spaces,node_color='#00aaee')
-  nx.draw_networkx_nodes(g,pos,nodelist=doors,node_color='#ee0033')
-  nx.draw_networkx_nodes(g,pos,nodelist=keys,node_color='#33ee66')
+  nx.draw_networkx_nodes(g,pos,nodelist=doors.values(),node_color='#ee0033')
+  nx.draw_networkx_nodes(g,pos,nodelist=keys.values(),node_color='#33ee66')
   nx.draw_networkx_edges(g,pos)
   nx.draw_networkx_labels(g, pos)
   plt.show()
+
+def createGameFrom(level, position):
+  keepgoing = True
+  curgraph = nx.Graph()
+  curgraph.add_node(position)
+  visited = set()
+  reachablekeys = dict()
+  reachabledoors = dict()
+  tovisit = set([position])
+  nextvisits = set()
+  while keepgoing:
+    for p in tovisit:
+      for n in neighbors(level, p):
+        if n in visited or level[n] == "#":
+          continue
+        
+        # TODO: for non-intersection-points, continue building a weighted graph
+
+        curgraph.add_node(n)
+        curgraph.add_edge(p, n)
+        if level[n] == ".":
+          nextvisits.add(n)
+          visited.add(n)
+        elif level[n].islower():
+          nextvisits.add(n)
+          visited.add(n)
+          reachablekeys[level[n]] = n
+        else:
+          reachabledoors[level[n].lower()] = n
+
+    keepgoing = len(nextvisits) > 0
+    tovisit = nextvisits
+    nextvisits = set()
+  return curgraph, visited, reachabledoors, reachablekeys
 
 def solve(data):
   x, y = 0, 0
@@ -41,37 +75,19 @@ def solve(data):
 
   # drawascii(level)
 
-  keepgoing = True
-  curgraph = nx.Graph()
-  curgraph.add_node(position)
-  visited = set()
-  tovisit = set([position])
-  layer2 = set()
-  reachablekeys = set()
-  reachabledoors = set()
-  while keepgoing:
-    for p in tovisit:
-      for n in neighbors(level, p):
-        if n in visited or level[n] == "#":
-          continue
-        
-        curgraph.add_node(n)
-        curgraph.add_edge(p, n)
-        if level[n] == ".":
-          layer2.add(n)
-          visited.add(n)
-        elif level[n].islower():
-          layer2.add(n)
-          visited.add(n)
-          reachablekeys.add(n)
-        else:
-          reachabledoors.add(n)
+  curgraph, visited, reachabledoors, reachablekeys = createGameFrom(level, position)
 
-    keepgoing = len(layer2) > 0
-    tovisit = layer2
-    layer2 = set()
+  # closestdist = 100000
+  # closestletter = None
+  # for letter in set(reachabledoors.keys()) & set(reachablekeys.keyu()):
+  #   door = reachabledoors[letter]
+  #   key = reachablekeys[letter]
+  #   keydist = nx.shortest_path_length(curgraph, position, key)
+  #   doordist = nx.shortest_path_length(curgraph, key, door)
+  #   totaldist = keydist + doordist
 
-  draw(curgraph, visited, reachabledoors, reachablekeys)
+  # Need to condense "visited" first, use a dist instead of single steps
+  # draw(curgraph, visited, reachabledoors, reachablekeys)
 
   return None
 
