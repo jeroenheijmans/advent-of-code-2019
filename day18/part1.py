@@ -58,9 +58,9 @@ def createGameFrom(level, position):
         if n in visited or level[n] in ["#", "@"]:
           continue
 
+        weight = 1
         if level[n] in ["."]:
           # Try to condense hallways:
-          weight = 1
           while True:
             nextneighbors = neighbors(level, n)
             others = [x for x in nextneighbors if x != p and x != n and x not in visited]
@@ -193,7 +193,7 @@ def solve(data):
   allkeys = set(keys.keys())
   mykeys = set()
   
-  # draw(curgraph, spaces, doors, keys, position)
+  draw(curgraph, spaces, doors, keys, position)
 
   return recursePath(level, curgraph, allkeys, mykeys, position, origin)
 
@@ -204,4 +204,5 @@ with open('input.txt', 'r') as file:
 # Not 5014 -- too high still
 # Not 4906 -- too high yet again
 # Not 4674
+# Not 3976
 print("Part 1:", solve(raw))
