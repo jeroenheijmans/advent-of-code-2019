@@ -153,7 +153,9 @@ def recursePath(level, graph: nx.Graph, allkeys, mykeys, position, origin):
             nextvisits.add(other) # we have a key for this door!
         elif level[other].islower():
           if level[other] not in newkeys:
-            reachableNeededKeys.add(other) # found a new key! recurse here
+            path = nx.single_source_dijkstra(graph, position, other, weight='weight')
+            pathweight = path[0] # path[1] is list of point-tuples in order
+            reachableNeededKeys.add((other, pathweight)) # found a new key! recurse on this
           else:
             nextvisits.add(other) # key already owned
         else:
@@ -163,23 +165,17 @@ def recursePath(level, graph: nx.Graph, allkeys, mykeys, position, origin):
     tovisit = nextvisits
     nextvisits = set()
 
-  # print([(p,level[p]) for p in reachableNeededKeys])
-
   paths = []
-  quickest = 1000000
-  target = None
-  for k in reachableNeededKeys:
+  sortedtargets = sorted(reachableNeededKeys, key=lambda x: x[1])
+  minweight = sortedtargets[0][1]
+  for k, pathweight in sortedtargets:
+    if pathweight > minweight + 50:
+      break
     if position == origin:
       print("Pathing from", position, "to", k, "for key", level[k], "while having keys", "".join(sorted(newkeys)))
-    path = nx.single_source_dijkstra(graph, position, k, weight='weight')
-    pathweight = path[0] # path[1] is list of point-tuples in order
-    if pathweight < quickest:
-      quickest = pathweight
-      target = k
-
-  innerresult = recursePath(level, graph, allkeys, newkeys, target, origin)
-  newweight = innerresult + quickest
-  paths.append(newweight)
+    innerresult = recursePath(level, graph, allkeys, newkeys, k, origin)
+    newweight = innerresult + pathweight
+    paths.append(newweight)
 
   return min(paths)
 
@@ -209,4 +205,5 @@ with open('input.txt', 'r') as file:
 
 # Not 7071 - too high :'(
 # Not 5014 -- too high still
+# Not 4906 -- too high yet again
 print("Part 1:", solve(raw))
