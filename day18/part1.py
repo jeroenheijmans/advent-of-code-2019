@@ -3,12 +3,14 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 
 def neighbors(level, p):
-  return [
+  all = [
     (p[0] + 1, p[1]),
     (p[0] - 1, p[1]),
     (p[0], p[1] + 1),
     (p[0], p[1] - 1),
   ]
+
+  return [x for x in all if level[x] != "#"]
 
 def drawascii(level):
   maxx = max([x for x,_ in level.keys()])
@@ -60,14 +62,17 @@ def createGameFrom(level, position):
             visited.add(n)
             n = others[0]
             weight += 1
+          if level[n] == "#": raise ValueError("Problem at " + str(n))
           nextvisits.add(n)
           visited.add(n)
           spaces.add(n)
         elif level[n].islower():
+          if level[n] == "#": raise ValueError("Problem at " + str(n))
           nextvisits.add(n)
           visited.add(n)
           keys[level[n]] = n
         else:
+          if level[n] == "#": raise ValueError("Problem at " + str(n))
           nextvisits.add(n)
           visited.add(n)
           doors[level[n].lower()] = n
