@@ -167,12 +167,9 @@ def recursePath(level, graph: nx.Graph, allkeys, mykeys, position, origin):
 
   paths = []
   sortedtargets = sorted(reachableNeededKeys, key=lambda x: x[1])
-  minweight = sortedtargets[0][1]
-  for k, pathweight in sortedtargets:
-    if pathweight > minweight + 50:
-      break
-    if position == origin:
-      print("Pathing from", position, "to", k, "for key", level[k], "while having keys", "".join(sorted(newkeys)))
+  for k, pathweight in sortedtargets[:2]:
+    if len(newkeys) < 5:
+      print(len(newkeys), "Pathing from", position, "to", k, "for key", level[k], "while having keys", "".join(sorted(newkeys)))
     innerresult = recursePath(level, graph, allkeys, newkeys, k, origin)
     newweight = innerresult + pathweight
     paths.append(newweight)
@@ -206,4 +203,5 @@ with open('input.txt', 'r') as file:
 # Not 7071 - too high :'(
 # Not 5014 -- too high still
 # Not 4906 -- too high yet again
+# Not 4674
 print("Part 1:", solve(raw))
