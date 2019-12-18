@@ -91,34 +91,34 @@ def createGameFrom(level, position):
     tovisit = nextvisits
     nextvisits = set()
 
-  # # Remove leaves without doors and keys:
-  # keepgoing = True
-  # while keepgoing:
-  #   keepgoing = False
-  #   leaves = [x for x in curgraph.nodes() if len(list(curgraph.neighbors(x))) == 1]
-  #   for leaf in leaves:
-  #     if level[leaf] == ".":
-  #       keepgoing = True
-  #       curgraph.remove_node(leaf)
-  #       spaces.remove(leaf)
+  # Remove leaves without doors and keys:
+  keepgoing = True
+  while keepgoing:
+    keepgoing = False
+    leaves = [x for x in curgraph.nodes() if len(list(curgraph.neighbors(x))) == 1]
+    for leaf in leaves:
+      if level[leaf] == ".":
+        keepgoing = True
+        curgraph.remove_node(leaf)
+        spaces.remove(leaf)
   
-  # # Another round of condensing hallways:
-  # keepgoing = True
-  # while keepgoing:
-  #   keepgoing = False
-  #   potentials = [x for x in curgraph.nodes() if len(list(curgraph.neighbors(x))) == 2]
-  #   for pot in potentials:
-  #     others = list(curgraph.neighbors(pot))
-  #     if pot in spaces and len(others) == 2:
-  #       weight = curgraph.edges[others[0], pot]['weight'] + curgraph.edges[others[1], pot]['weight']
-  #       curgraph.remove_node(pot)
-  #       spaces.remove(pot)
-  #       curgraph.add_edge(others[0], others[1], weight=weight)
+  # Another round of condensing hallways:
+  keepgoing = True
+  while keepgoing:
+    keepgoing = False
+    potentials = [x for x in curgraph.nodes() if len(list(curgraph.neighbors(x))) == 2]
+    for pot in potentials:
+      others = list(curgraph.neighbors(pot))
+      if pot in spaces and len(others) == 2:
+        weight = curgraph.edges[others[0], pot]['weight'] + curgraph.edges[others[1], pot]['weight']
+        curgraph.remove_node(pot)
+        spaces.remove(pot)
+        curgraph.add_edge(others[0], others[1], weight=weight)
 
   return curgraph, spaces, doors, keys
 
 def recursePath(level, graph: nx.Graph, allkeys, mykeys, position, origin):
-  print("Recursing on", "".join(mykeys), "vs", "".join(sorted(allkeys)))
+  # print("Recursing on", "".join(mykeys), "vs", "".join(sorted(allkeys)))
   newkeys = mykeys.copy()
   if level[position].islower():
     newkeys.add(level[position])
@@ -166,15 +166,20 @@ def recursePath(level, graph: nx.Graph, allkeys, mykeys, position, origin):
   # print([(p,level[p]) for p in reachableNeededKeys])
 
   paths = []
-  for k in list(reachableNeededKeys)[:1]:
+  quickest = 1000000
+  target = None
+  for k in reachableNeededKeys:
     if position == origin:
       print("Pathing from", position, "to", k, "for key", level[k], "while having keys", "".join(sorted(newkeys)))
     path = nx.single_source_dijkstra(graph, position, k, weight='weight')
-    # print (p, k, level[k], path)
     pathweight = path[0] # path[1] is list of point-tuples in order
-    innerresult = recursePath(level, graph, allkeys, newkeys, k, origin)
-    newweight = innerresult + pathweight
-    paths.append(newweight)
+    if pathweight < quickest:
+      quickest = pathweight
+      target = k
+
+  innerresult = recursePath(level, graph, allkeys, newkeys, target, origin)
+  newweight = innerresult + quickest
+  paths.append(newweight)
 
   return min(paths)
 
@@ -203,4 +208,5 @@ with open('input.txt', 'r') as file:
   raw = file.read().splitlines()
 
 # Not 7071 - too high :'(
+# Not 5014 -- too high still
 print("Part 1:", solve(raw))
