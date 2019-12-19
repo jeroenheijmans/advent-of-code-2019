@@ -61,26 +61,30 @@ def runComputer(data, input):
       raise ValueError(f'opcode {opcode} from {program[i]}')
 
 def draw(level):
-  # clear()
-  
   minx = min([x for x, _ in level.keys()])
   miny = min([y for _, y in level.keys()])
   maxx = max([x for x, _ in level.keys()])
   maxy = max([y for _, y in level.keys()])
 
+  buffer = []
   for y in range(miny, maxy+1):
     line = ""
     for x in range(minx, maxx+1):
-      line += level[(x,y)]
-    print(line)
+      line += level[(x,y)] if (x,y) in level else ' '
+    buffer.append(line)
+  
+  with open('temp.txt', 'w', newline='\r\n') as file:
+    for line in buffer: 
+      print(line)
+      file.write(line + "\n")
 
 def solve(data):
   x, y = 0, 0
-  level = defaultdict(lambda:".")
-  result = 0
+  level = dict()
 
+  spotted = False
   while True:
-    if y >= 50:
+    if y >= 500:
       break
 
     # print("Checking", x, y)
@@ -94,21 +98,22 @@ def solve(data):
       level[(x,y)] = "."
     elif status == 1:
       level[(x,y)] = "#"
-      result += 1
+      spotted = True
+      x = max([p[0] for p in level if level[p] == "#"])
     
-    if x < 49:
-      x += 1
-    else:
-      x = 0
+    if (x,y) in level and level[(x,y)] == "." and spotted:
+      x = min([p[0] for p in level if p[1] == y and level[p] == "#"])
       y += 1
+      spotted = False
+    else:
+      x += 1
 
-  
-  print(x,y)
   draw(level)
 
-  return result
+  return None
 
 with open('input.txt', 'r') as file:
   raw = list(map(int, file.read().splitlines()[0].split(",")))
 
+# Not 1530078, tried to spot it manually in the output :P
 print("Part 2:", solve(raw))
