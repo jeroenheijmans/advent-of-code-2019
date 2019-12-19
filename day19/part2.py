@@ -78,6 +78,24 @@ def draw(level):
       print(line)
       file.write(line + "\n")
 
+def findanswer(level):
+  miny = min([y for _, y in level.keys()])
+  maxy = max([y for _, y in level.keys()])
+
+  for y in range(miny, maxy+1):
+    bottomy = y + 10
+    xsAtTop    = [p[0] for p in level if level[p] == "#" and p[1] == y ]
+    xsAtBottom = [p[0] for p in level if level[p] == "#" and p[1] == bottomy ]
+
+    if len(xsAtTop) == 0 or len(xsAtBottom) == 0:
+      continue 
+
+    minx = min(xsAtBottom)
+    maxx = max(xsAtTop)
+    
+    if minx in xsAtTop and maxx in xsAtBottom:
+      return minx * 10000 + y
+
 def solve(data):
   x, y = 0, 0
   level = dict()
@@ -108,6 +126,9 @@ def solve(data):
     else:
       x += 1
 
+    answer = findanswer(level)
+    if answer is not None: return answer
+
   draw(level)
 
   return None
@@ -117,4 +138,5 @@ with open('input.txt', 'r') as file:
 
 # Not 1530078, tried to spot it manually in the output :P
 # Not 1490076, also guessed by hand :P
+# Not 1040050
 print("Part 2:", solve(raw))
