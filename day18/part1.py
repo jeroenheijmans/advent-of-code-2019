@@ -167,9 +167,15 @@ def recursePath(level, graph: nx.Graph, allkeys, mykeys, position, origin):
 
   paths = []
   sortedtargets = sorted(reachableNeededKeys, key=lambda x: x[1])
-  sortedtargets = sortedtargets[:1] + sortedtargets[-1:] if position == origin else sortedtargets[:1]
+  if position == origin:
+    sortedtargets = sortedtargets
+  elif len(newkeys) < 8 or len(newkeys) > 18:
+    sortedtargets = sortedtargets[:3] + sortedtargets[-1:]
+  else:
+    sortedtargets = sortedtargets[:1]
+  
   for k, pathweight in sortedtargets:
-    if len(newkeys) < 5:
+    if len(newkeys) < 4:
       print(len(newkeys), "Pathing from", position, "to", k, "for key", level[k], "while having keys", "".join(sorted(newkeys)))
     innerresult = recursePath(level, graph, allkeys, newkeys, k, origin)
     newweight = innerresult + pathweight
@@ -194,7 +200,7 @@ def solve(data):
   allkeys = set(keys.keys())
   mykeys = set()
   
-  draw(curgraph, spaces, doors, keys, position)
+  # draw(curgraph, spaces, doors, keys, position)
 
   return recursePath(level, curgraph, allkeys, mykeys, position, origin)
 
@@ -207,4 +213,5 @@ with open('input.txt', 'r') as file:
 # Not 4674
 # Not 3976
 # Not 4208
+# Not 3984 -- now have to wait 10 minutes after guessing incorrectly 7 times...
 print("Part 1:", solve(raw))
