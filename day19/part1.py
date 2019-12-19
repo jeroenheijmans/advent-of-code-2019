@@ -80,6 +80,9 @@ def solve(data):
   result = 0
 
   while True:
+    if y >= 50:
+      break
+
     # print("Checking", x, y)
     inputs = [y, x] # IntCode requires a stack of commands, not a queue!
     runner = runComputer(data, inputs)
@@ -93,15 +96,14 @@ def solve(data):
       level[(x,y)] = "#"
       result += 1
     
-    if x < 50:
+    if x < 49:
       x += 1
     else:
       x = 0
       y += 1
 
-    if y > 50:
-      break
   
+  print(x,y)
   draw(level)
 
   return result
