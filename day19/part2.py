@@ -116,4 +116,5 @@ with open('input.txt', 'r') as file:
   raw = list(map(int, file.read().splitlines()[0].split(",")))
 
 # Not 1530078, tried to spot it manually in the output :P
+# Not 1490076, also guessed by hand :P
 print("Part 2:", solve(raw))
