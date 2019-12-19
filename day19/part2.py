@@ -79,22 +79,19 @@ def draw(level):
       file.write(line + "\n")
 
 def findanswer(level):
-  miny = min([y for _, y in level.keys()])
   maxy = max([y for _, y in level.keys()])
+  for y in range(0, maxy-9):
+    bottomy = y + 9
+    xsAtTop    = list([p[0] for p in level if level[p] == "#" and p[1] == y])
+    xsAtBottom = list([p[0] for p in level if level[p] == "#" and p[1] == bottomy])
 
-  for y in range(miny, maxy+1):
-    bottomy = y + 10
-    xsAtTop    = [p[0] for p in level if level[p] == "#" and p[1] == y ]
-    xsAtBottom = [p[0] for p in level if level[p] == "#" and p[1] == bottomy ]
+    maxxTop = max(xsAtTop)
+    maxxBottom = max(xsAtBottom)
+    minxTop = min(xsAtTop)
+    minxBottom = min(xsAtBottom)
 
-    if len(xsAtTop) == 0 or len(xsAtBottom) == 0:
-      continue 
-
-    minx = min(xsAtBottom)
-    maxx = max(xsAtTop)
-    
-    if minx in xsAtTop and maxx in xsAtBottom:
-      return minx * 10000 + y
+    if (maxxTop - minxBottom) >= 9 and (maxxBottom - minxTop) >= 9:
+      return minxBottom * 10000 + y
 
 def solve(data):
   x, y = 0, 0
@@ -133,10 +130,61 @@ def solve(data):
 
   return None
 
+testdata = [
+  "#.......................................",
+  ".#......................................",
+  "..##....................................",
+  "...###..................................",
+  "....###.................................",
+  ".....####...............................",
+  "......#####.............................",
+  "......######............................",
+  ".......#######..........................",
+  "........########........................",
+  ".........#########......................",
+  "..........#########.....................",
+  "...........##########...................",
+  "...........############.................",
+  "............############................",
+  ".............#############..............",
+  "..............##############............",
+  "...............###############..........",
+  "................###############.........",
+  "................#################.......",
+  ".................##################.....",
+  "..................##################....",
+  "...................###################..",
+  "....................####################",
+  ".....................###################",
+  ".....................###################",
+  "......................##################",
+  ".......................#################",
+  "........................################",
+  ".........................###############",
+  "..........................##############",
+  "..........................##############",
+  "...........................#############",
+  "............................############",
+  ".............................###########",
+]
+
+testlevel = dict()
+a, b = 0, 0
+for line in testdata:
+  for c in line:
+    testlevel[(a,b)] = c
+    a += 1
+  a = 0
+  b += 1
+draw(testlevel)
+print(testlevel[(25,30)])
+print("Test level answer should be 250020! Was:", findanswer(testlevel))
+
 with open('input.txt', 'r') as file:
   raw = list(map(int, file.read().splitlines()[0].split(",")))
 
 # Not 1530078, tried to spot it manually in the output :P
 # Not 1490076, also guessed by hand :P
 # Not 1040050
+# Not 1420073
 print("Part 2:", solve(raw))
