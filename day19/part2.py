@@ -60,7 +60,7 @@ def runComputer(data, input):
     else:
       raise ValueError(f'opcode {opcode} from {program[i]}')
 
-def draw(level):
+def draw(level, consoletoo = True):
   minx = min([x for x, _ in level.keys()])
   miny = min([y for _, y in level.keys()])
   maxx = max([x for x, _ in level.keys()])
@@ -75,22 +75,25 @@ def draw(level):
   
   with open('temp.txt', 'w', newline='\r\n') as file:
     for line in buffer: 
-      print(line)
+      if consoletoo: print(line)
       file.write(line + "\n")
 
-def findanswer(level):
+def findanswer(level, size = 100):
   maxy = max([y for _, y in level.keys()])
-  for y in range(0, maxy-9):
-    bottomy = y + 9
+  for y in range(maxy//2, maxy-size-1):
+    bottomy = y + size-1
     xsAtTop    = list([p[0] for p in level if level[p] == "#" and p[1] == y])
     xsAtBottom = list([p[0] for p in level if level[p] == "#" and p[1] == bottomy])
+
+    if len(xsAtBottom) == 0:
+      continue
 
     maxxTop = max(xsAtTop)
     maxxBottom = max(xsAtBottom)
     minxTop = min(xsAtTop)
     minxBottom = min(xsAtBottom)
 
-    if (maxxTop - minxBottom) >= 9 and (maxxBottom - minxTop) >= 9:
+    if (maxxTop - minxBottom) >= size-1 and (maxxBottom - minxTop) >= size-1:
       return minxBottom * 10000 + y
 
 def solve(data):
@@ -98,8 +101,9 @@ def solve(data):
   level = dict()
 
   spotted = False
+  done = False
   while True:
-    if y >= 500:
+    if y >= 25000:
       break
 
     # print("Checking", x, y)
@@ -111,24 +115,26 @@ def solve(data):
 
     if status == 0:
       level[(x,y)] = "."
+      if spotted: done = True
     elif status == 1:
       level[(x,y)] = "#"
       spotted = True
       x = max([p[0] for p in level if level[p] == "#"])
     
-    if (x,y) in level and level[(x,y)] == "." and spotted:
+    if (x,y) in level and level[(x,y)] == "." and spotted and done:
       x = min([p[0] for p in level if p[1] == y and level[p] == "#"])
       y += 1
       spotted = False
+      done = False
     else:
       x += 1
 
     answer = findanswer(level)
-    if answer is not None: return answer
+    if answer: break
 
-  draw(level)
+  draw(level, False)
 
-  return None
+  return answer
 
 testdata = [
   "#.......................................",
@@ -178,7 +184,7 @@ for line in testdata:
   b += 1
 draw(testlevel)
 print(testlevel[(25,30)])
-print("Test level answer should be 250020! Was:", findanswer(testlevel))
+print("Test level answer should be 250020! Was:", findanswer(testlevel, 10))
 
 with open('input.txt', 'r') as file:
   raw = list(map(int, file.read().splitlines()[0].split(",")))
