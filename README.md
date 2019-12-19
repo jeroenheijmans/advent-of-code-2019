@@ -26,10 +26,10 @@ Here are the lessons learned for each day:
 13. Magic: how much others can do with so little.
 14. Some languages have higher cognitive load than others.
 15. **Investor's fallacy is a great source for technical debt**.
-16. TODO
+16. Brute. Force. Works.
 17. Personal biases hurt debugging.
 18. TODO
-19. TODO
+19. Code can be ugly and beautiful at the same time.
 20. TODO
 21. TODO
 22. TODO
