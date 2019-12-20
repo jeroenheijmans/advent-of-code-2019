@@ -60,6 +60,31 @@ def createGameFrom(data):
     others = [x for x in portaldict if x != p1 and portaldict[x] == portaldict[p1]]
     p2 = others[0]
     curgraph.add_edge(p1, p2, weight=1)
+    
+  # Remove leaves without doors and keys:
+  keepgoing = True
+  while keepgoing:
+    keepgoing = False
+    leaves = [x for x in curgraph.nodes() if len(list(curgraph.neighbors(x))) == 1]
+    for leaf in leaves:
+      if level[leaf] == ".":
+        keepgoing = True
+        curgraph.remove_node(leaf)
+        spaces.remove(leaf)
+
+  # Condensing hallways:
+  keepgoing = True
+  while keepgoing:
+    keepgoing = False
+    potentials = [x for x in curgraph.nodes() if len(list(curgraph.neighbors(x))) == 2]
+    for pot in potentials:
+      others = list(curgraph.neighbors(pot))
+      if pot in spaces and len(others) == 2 and len(set(others) & portals) == 0:
+        weight = curgraph.edges[others[0], pot]['weight'] + curgraph.edges[others[1], pot]['weight']
+        curgraph.remove_node(pot)
+        spaces.remove(pot)
+        keepgoing = True
+        curgraph.add_edge(others[0], others[1], weight=weight)
   
   return curgraph, portals, spaces, start, finish
 
@@ -78,7 +103,7 @@ def draw(g, portals, spaces, start, finish):
 
 def solve(data):
   curgraph, portals, spaces, start, finish = createGameFrom(data)
-  # draw(curgraph, portals, spaces, start, finish)
+  draw(curgraph, portals, spaces, start, finish)
 
   path = nx.single_source_dijkstra(curgraph, start, finish, weight='weight')
   pathweight = path[0] # path[1] is list of point-tuples in order
