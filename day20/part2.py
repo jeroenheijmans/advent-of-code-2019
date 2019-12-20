@@ -124,7 +124,7 @@ def solve(data):
   def isInner(n):
     return not isOuter(n) and n not in spaces
 
-  recdepth = 40
+  recdepth = 50 # Should be plenty
   
   for z in range(recdepth):
     for pair in curgraph.edges():
@@ -159,11 +159,11 @@ def solve(data):
   start = (start[0], start[1], 0)
   finish = (finish[0], finish[1], 0)
 
+  # This doesn't work for larger recursion depths though
   # draw(digraph, portals2, spaces2, start, finish)
 
   print("Searching for path from", start, "to", finish)
   result = nx.dijkstra_path_length(digraph, start, finish, weight='weight')
-
   return result
 
 with open('input.txt', 'r') as file:
