@@ -79,35 +79,70 @@ def createGameFrom(data):
     potentials = [x for x in curgraph.nodes() if len(list(curgraph.neighbors(x))) == 2]
     for pot in potentials:
       others = list(curgraph.neighbors(pot))
-      if pot in spaces and len(others) == 2:
+      if pot in spaces and len(others) == 2 and len(set(others) & portals) == 0:
         weight = curgraph.edges[others[0], pot]['weight'] + curgraph.edges[others[1], pot]['weight']
         curgraph.remove_node(pot)
         spaces.remove(pot)
+        keepgoing = True
         curgraph.add_edge(others[0], others[1], weight=weight)
-  
+
   return curgraph, portals, spaces, start, finish
 
 def draw(g, portals, spaces, start, finish):
+  # Nodes
   pos = nx.get_node_attributes(g, 'pos')
-
-  nx.draw_networkx_nodes(g, pos, nodelist=spaces, node_size=40, node_color='#eeee00', alpha=0.9)
-  nx.draw_networkx_nodes(g, pos, nodelist=portals, node_size=100, node_color='#ee0000', alpha=0.9)
-
-  nx.draw_networkx_edges(g, pos, alpha=0.6)
   labels = nx.get_node_attributes(g,'label')
-  nx.draw_networkx_labels(g, pos, labels=labels, font_size=11, alpha=0.4)
+  nx.draw_networkx_nodes(g, pos, nodelist=spaces, node_size=100, node_color='#33ee33', alpha=0.9)
+  nx.draw_networkx_nodes(g, pos, nodelist=portals, node_size=250, node_color='#ee3333', alpha=0.9)
+  nx.draw_networkx_labels(g, pos, labels=labels, font_size=9, alpha=0.4)
+
+  # Edges
   labels = nx.get_edge_attributes(g,'weight')
+  nx.draw_networkx_edges(g, pos, alpha=0.6)
   nx.draw_networkx_edge_labels(g, pos, font_size=7, edge_labels=labels)
+
   plt.show()
 
 def solve(data):
   curgraph, portals, spaces, start, finish = createGameFrom(data)
-  draw(curgraph, portals, spaces, start, finish)
 
-  # path = nx.single_source_dijkstra(curgraph, start, finish, weight='weight')
-  # pathweight = path[0] # path[1] is list of point-tuples in order
+  digraph = nx.DiGraph()
 
-  return None
+  minx = min([p[0] for p in portals])
+  miny = min([p[1] for p in portals])
+  maxx = max([p[0] for p in portals])
+  maxy = max([p[1] for p in portals])
+
+  def isOuter(n):
+    return n[0] == minx or n[0] == maxx or n[1] == miny or n[1] == maxy
+
+  def isInner(n):
+    return not isOuter(n) and n not in spaces
+
+  for n in curgraph.nodes():
+    label = curgraph.nodes[n]["label"]
+    digraph.add_node(n, pos=(n[0], -n[1]), label=label)
+  
+  for e in curgraph.edges():
+    weight = curgraph.edges[e]["weight"]
+    if isOuter(e[0]):
+      digraph.add_edge(e[1], e[0], weight=weight)
+    if isOuter(e[1]):
+      digraph.add_edge(e[0], e[1], weight=weight)
+    
+    if e[0] in spaces and not isOuter(e[1]):
+      digraph.add_edge(e[0], e[1], weight=weight)
+    if e[1] in spaces and not isOuter(e[0]):
+      digraph.add_edge(e[1], e[0], weight=weight)
+
+  draw(digraph, portals, spaces, start, finish)
+
+  path = nx.single_source_dijkstra(curgraph, start, finish, weight='weight')
+  pathweight = path[0] # path[1] is list of point-tuples in order
+
+  print(path)
+
+  return pathweight
 
 with open('input.txt', 'r') as file:
   raw = file.read().splitlines()
