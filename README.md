@@ -30,7 +30,7 @@ Here are the lessons learned for each day:
 17. Personal biases hurt debugging.
 18. TODO
 19. Code can be ugly and beautiful at the same time.
-20. TODO
+20. **Map hard problems to easy problems, then solve those**.
 21. TODO
 22. TODO
 23. TODO
