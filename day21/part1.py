@@ -16,8 +16,7 @@ def runComputer(data, input):
   while True:
     opcode = program[i] % 100
 
-    if opcode == 99:
-      break
+    if opcode == 99: break
 
     mode1 = (program[i] - opcode) // 100 % 10
     mode2 = (program[i] - opcode) // 1000 % 10
@@ -36,8 +35,6 @@ def runComputer(data, input):
     if mode3 == 0: p3 = program[i + 3]
     elif mode3 == 1: raise ValueError('Immediate mode invalid for param 3')
     elif mode3 == 2: p3 = program[i + 3] + relbase
-
-    # print('i =', i, '--- operation', opcode, '--- modes', mode1, mode2, mode3, '--- positions', str(p1).rjust(4, ' '), str(p2).rjust(4, ' '), str(p3).rjust(4, ' '))
 
     if opcode == 1: # addition
       program[p3] = program[p1] + program[p2]
@@ -72,11 +69,14 @@ def addMovesToInputStack(moves, inputsStack):
   for i in reversed([ord(c) for line in moves for c in (line + "\n")]):
     inputsStack.append(i)
 
-def solve(data, moves):
+def solve(data):
   inputs = []
   runner = runComputer(data, inputs)
   level = ""
   result = None
+  moves = [
+    "WALK",
+  ]
   addMovesToInputStack(moves, inputs)
 
   while True:
@@ -90,39 +90,12 @@ def solve(data, moves):
     else:
       level += chr(status)
 
-  # print("RENDERING OUTPUT")
-  # print(level)
+  print("RENDERING OUTPUT")
+  print(level)
 
   return result
 
 with open('input.txt', 'r') as file:
   raw = list(map(int, file.read().splitlines()[0].split(",")))
 
-registers = ["A", "B", "C", "D"]
-outputs = ["T", "J"]
-possibilities = []
-
-for op in ["NOT", "AND", "OR"]:
-  for left in registers:
-    for right in outputs:
-      possibilities.append(f"{op} {left} {right}")
-
-def generateMoves(length):
-  while True:
-    yield [random.choice(possibilities) for _ in range(length)]
-
-def solveOuter(raw):
-  step = 0
-  start = time()
-
-  for combi in generateMoves(12):
-    step += 1
-    moves = list(combi) + ["WALK"]
-    if step % 100 == 0:
-      print('Step', str(step).ljust(2, ' '), 'time', str(round(time() - start, 4)).ljust(7, "0"), "trying moves", moves)
-    result = solve(raw, moves)
-    if result:
-      print("Found solution with:", moves)
-      return result
-
-print("SOLUTION:", solveOuter(raw))
+print("SOLUTION:", solve(raw))
