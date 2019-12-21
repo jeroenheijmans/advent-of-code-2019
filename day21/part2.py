@@ -76,17 +76,11 @@ def solve(data):
   result = None
   moves = [
     
-    # Jump if you want to land on D and C has no ground
+    # Jump if ...
     "NOT C T",
     "AND D T",
     "OR T J",
-
-    # Unless F has ground to land on and B+A have ground
-    "OR A T",
-    "AND B T",
-    "AND F T",
-    "NOT T T",
-    "AND T J",
+    
 
     # Always jump if a hole is in front of you
     "NOT A T",
@@ -109,7 +103,13 @@ def solve(data):
       level += chr(status)
 
   print("RENDERING OUTPUT")
-  print(level)
+  pos = 0
+  for line in level.split("\n"):
+    pos = line.index("@") if "@" in line else pos
+    print(line)
+    if line[:1] == "#":
+      markers = [" "] * (pos+1) + ["ABCDEFGHI"]
+      print("".join(markers)[:len(line)])
 
   return result
 
