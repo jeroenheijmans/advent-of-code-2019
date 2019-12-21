@@ -1,4 +1,7 @@
+import random
+from time import time
 import os
+import itertools as it
 from collections import defaultdict
 
 # Windows only :P
@@ -68,17 +71,12 @@ def addMovesToInputStack(moves, inputsStack):
   # Reverse order since we need a stack for IntCode
   for i in reversed([ord(c) for line in moves for c in (line + "\n")]):
     inputsStack.append(i)
-  
 
-def solve(data):
+def solve(data, moves):
   inputs = []
   runner = runComputer(data, inputs)
   level = ""
-  result = "not found"
-  moves = [
-    "NOT A J",
-    "WALK"
-  ]
+  result = None
   addMovesToInputStack(moves, inputs)
 
   while True:
@@ -92,12 +90,39 @@ def solve(data):
     else:
       level += chr(status)
 
-  print("RENDERING OUTPUT")
-  print(level)
+  # print("RENDERING OUTPUT")
+  # print(level)
 
   return result
 
 with open('input.txt', 'r') as file:
   raw = list(map(int, file.read().splitlines()[0].split(",")))
 
-print("SOLUTION:", solve(raw))
+registers = ["A", "B", "C", "D"]
+outputs = ["T", "J"]
+possibilities = []
+
+for op in ["NOT", "AND", "OR"]:
+  for left in registers:
+    for right in outputs:
+      possibilities.append(f"{op} {left} {right}")
+
+def generateMoves(length):
+  while True:
+    yield [random.choice(possibilities) for _ in range(length)]
+
+def solveOuter(raw):
+  step = 0
+  start = time()
+
+  for combi in generateMoves(12):
+    step += 1
+    moves = list(combi) + ["WALK"]
+    if step % 100 == 0:
+      print('Step', str(step).ljust(2, ' '), 'time', str(round(time() - start, 4)).ljust(7, "0"), "trying moves", moves)
+    result = solve(raw, moves)
+    if result:
+      print("Found solution with:", moves)
+      return result
+
+print("SOLUTION:", solveOuter(raw))
