@@ -76,11 +76,10 @@ def solve(data):
   result = None
   moves = [
     
-    # Jump if ...
-    "NOT C T",
+    # Jump if H and D are floors
+    "OR H T",
     "AND D T",
     "OR T J",
-    
 
     # Always jump if a hole is in front of you
     "NOT A T",
