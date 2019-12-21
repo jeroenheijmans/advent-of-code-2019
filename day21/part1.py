@@ -74,6 +74,7 @@ def solve(data):
   inputs = []
   runner = runComputer(data, inputs)
   level = ""
+  result = "not found"
   moves = [
     "NOT A J",
     "WALK"
@@ -86,15 +87,17 @@ def solve(data):
 
     if status > 512:
       print("Large ascii value", status)
-      return status
+      result = status
+      break
     else:
       level += chr(status)
 
+  print("RENDERING OUTPUT")
   print(level)
 
-  return None
+  return result
 
 with open('input.txt', 'r') as file:
   raw = list(map(int, file.read().splitlines()[0].split(",")))
 
-print("Solution:", solve(raw))
+print("SOLUTION:", solve(raw))
