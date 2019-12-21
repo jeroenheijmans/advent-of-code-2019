@@ -75,14 +75,24 @@ def solve(data):
   level = ""
   result = None
   moves = [
-    # Jump if a hole in front of you
-    "NOT A J", 
-
-    # ALso jump if D is ground and C is not ground
+    
+    # Jump if you want to land on D and C has no ground
     "NOT C T",
     "AND D T",
     "OR T J",
 
+    # Unless F has ground to land on and B+A have ground
+    "OR A T",
+    "AND B T",
+    "AND F T",
+    "NOT T T",
+    "AND T J",
+
+    # Always jump if a hole is in front of you
+    "NOT A T",
+    "OR T J",
+
+    # Then run
     "RUN",
   ]
   addMovesToInputStack(moves, inputs)
