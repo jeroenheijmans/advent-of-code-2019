@@ -26,21 +26,36 @@ def solve(data, size):
   if size < 20:
     print("Final deck:", deckstring(deck))
 
-  return None if size < 2019 else deck[2019]
+  return None if size < 2019 else deck[2020]
 
 with open('input.txt', 'r') as file:
   raw = file.read().splitlines()
 
-
-# print("Test 1:", solve("""
+# print("Test 0:", solve("""
 #   deal into new stack
 # """.splitlines(), 10))
 
-# print("Test 1:", solve("""
-#   cut 6
-#   deal with increment 7
-#   deal into new stack
-# """.splitlines(), 10))
+print("Test 1:", solve("""
+  deal with increment 7
+  deal into new stack
+  deal into new stack
+""".splitlines(), 10))
+print("Should be: ", "0 3 6 9 2 5 8 1 4 7\n")
+
+print("Test 2:", solve("""
+  cut 6
+  deal with increment 7
+  deal into new stack
+""".splitlines(), 10))
+print("Should be: ", "3 0 7 4 1 8 5 2 9 6\n")
+
+print("Test 3:", solve("""
+  deal with increment 7
+  deal with increment 9
+  cut -2
+""".splitlines(), 10))
+print("Should be: ", "6 3 0 7 4 1 8 5 2 9\n")
 
 # Not 2916
+# Not 7168
 print("Solution:", solve(raw, 10007))
