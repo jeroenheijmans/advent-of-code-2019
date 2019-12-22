@@ -127,19 +127,31 @@ def solve(data):
   allkeys = frozenset(keys.keys())
   alldoors = frozenset(doors.keys())
   states = { (position, frozenset()): 0 }
+  newstates = dict()
   
   for state in states:
     neededKeys = allkeys - state[1]
     closeddoors = alldoors - set([x for x in state[1]])
     closeddoorspoints = set([doors[k] for k in closeddoors])
     targets = [keys[k] for k in keys if k in neededKeys]
-    paths = [nx.single_source_dijkstra(curgraph, state[0], t, weight="weight") for t in targets]
+    paths = [
+      nx.single_source_dijkstra(curgraph, state[0], t, weight="weight") 
+      for t in targets
+    ]
     paths = [
       p for p in paths
       if not set(p[1]) & closeddoorspoints
     ]
     # Show all reachable keys and their costs and their paths:
-    for p in paths: print(p, [level[x] for x in p[1]])
+    for weight,path in paths:
+      newcost = states[state] + weight
+      newpos = path[-1]
+      newkeys = frozenset(state[1] | { level[newpos] })
+      newstate = (newpos, newkeys)
+      newstates[newstate] = newcost
+    
+    for s in newstates: print(newstates[s], s)
+      
     
 
 
