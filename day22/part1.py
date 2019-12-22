@@ -26,7 +26,7 @@ def solve(data, size):
   if size < 20:
     print("Final deck:", deckstring(deck))
 
-  return None if size < 2019 else deck[2020]
+  return deck.index(2019) if 2019 in deck else None
 
 with open('input.txt', 'r') as file:
   raw = file.read().splitlines()
