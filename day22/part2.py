@@ -10,7 +10,7 @@ def inc(position, size, n):
 def cut(position, size, n):
   return position - n if position >= n else size - (n - position)
 
-def solve(data, size, times):
+def solve(data, size, times, target):
   program = [
     (1, None) if "stack" in line else
     (2, num(line)) if "inc" in line else
@@ -19,18 +19,22 @@ def solve(data, size, times):
     for line in data
   ]
 
-  position = 2019
+  for startpos in range(times):
+    position = startpos
+    for op in program:
+      if op[0] == 1: position = rev(position, size)
+      elif op[0] == 2: position = inc(position, size, op[1])
+      elif op[0] == 3: position = cut(position, size, op[1])
+    
+    if position == target:
+      return startpos
 
-  for op in program:
-    if op[0] == 1: position = rev(position, size)
-    elif op[0] == 2: position = inc(position, size, op[1])
-    elif op[0] == 3: position = cut(position, size, op[1])
-
-  return position
+  return "Answer not found"
 
 with open('input.txt', 'r') as file:
   raw = file.read().splitlines()
 
-print("Verify part 1", solve(raw, size = 10007, times = 1))
+part1= solve(raw, size = 10007, times = 101_741_582_076_661, target = 2939)
+print("Verify part 1, should be 2019, is:", part1)
 
-# print("Solution:", solve(raw, size = 119_315_717_514_047, times = 101_741_582_076_661))
+# print("Solution:", solve(raw, size = 119_315_717_514_047, times = 101_741_582_076_661, target = 2020))
