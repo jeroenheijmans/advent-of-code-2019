@@ -2,24 +2,26 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from collections import defaultdict
 
+def createLevelFrom(data):
+  x, y = 0, 0
+  level = defaultdict(lambda: '#')
+  for line in data:
+    for c in line:
+      if c == "@": position = (x,y)
+      level[(x,y)] = '.' if c == "@" else c
+      x += 1
+    x = 0
+    y += 1
+  
+  return level, position
+
 def neighbors(level, p):
-  all = [
+  return [x for x in [
     (p[0] + 1, p[1]),
     (p[0] - 1, p[1]),
     (p[0], p[1] + 1),
     (p[0], p[1] - 1),
-  ]
-
-  return [x for x in all if level[x] != "#"]
-
-def drawascii(level):
-  maxx = max([x for x,_ in level.keys()])
-  maxy = max([y for _,y in level.keys()])
-  for y in range(maxy+1):
-    line = ""
-    for x in range(maxx+1):
-      line += level[(x,y)]
-    print(line)
+  ] if level[x] != "#"]
 
 def draw(g, spaces, doors, keys, position):
   pos = nx.get_node_attributes(g, 'pos')
@@ -117,92 +119,12 @@ def createGameFrom(level, position):
 
   return curgraph, spaces, doors, keys
 
-def recursePath(level, graph: nx.Graph, allkeys, mykeys, position, origin):
-  # print("Recursing on", "".join(mykeys), "vs", "".join(sorted(allkeys)))
-  newkeys = mykeys.copy()
-  if level[position].islower():
-    newkeys.add(level[position])
-  elif position == origin:
-    print("Starting recursion from @ at hardcoded input position", position)
-  else:
-    raise ValueError(f"Unexpected recursion at {position} char {level[position]}")
-  
-  # Recursion ends when we have all keys:
-  if allkeys == newkeys:
-    # print("Ending recursion with allkeys!")
-    return 0
-  
-  # Find reachable, needed keys:
-  reachableNeededKeys = set()
-  visited = set([position])
-  tovisit = set([position])
-  nextvisits = set()
-  keepgoing = True
-  while keepgoing:
-    keepgoing = False
-    for p in tovisit:
-      others = graph.neighbors(p)
-      for other in others:
-        if other in visited:
-          continue
-        visited.add(other)
-        if level[other] == ".":
-          nextvisits.add(other) # open space means just searching on
-        elif level[other].isupper():
-          if level[other].lower() in newkeys:
-            nextvisits.add(other) # we have a key for this door!
-        elif level[other].islower():
-          if level[other] not in newkeys:
-            path = nx.single_source_dijkstra(graph, position, other, weight='weight')
-            pathweight = path[0] # path[1] is list of point-tuples in order
-            reachableNeededKeys.add((other, pathweight)) # found a new key! recurse on this
-          else:
-            nextvisits.add(other) # key already owned
-        else:
-          raise ValueError("Can't continue at", p)
-    
-    keepgoing = len(tovisit) > 0
-    tovisit = nextvisits
-    nextvisits = set()
-
-  paths = []
-  sortedtargets = sorted(reachableNeededKeys, key=lambda x: x[1])
-  if position == origin:
-    sortedtargets = sortedtargets
-  elif len(newkeys) < 8 or len(newkeys) > 18:
-    sortedtargets = sortedtargets[:3] + sortedtargets[-1:]
-  else:
-    sortedtargets = sortedtargets[:1]
-  
-  for k, pathweight in sortedtargets:
-    if len(newkeys) < 4:
-      print(len(newkeys), "Pathing from", position, "to", k, "for key", level[k], "while having keys", "".join(sorted(newkeys)))
-    innerresult = recursePath(level, graph, allkeys, newkeys, k, origin)
-    newweight = innerresult + pathweight
-    paths.append(newweight)
-
-  return min(paths)
-
 def solve(data):
-  x, y = 0, 0
-  level = defaultdict(lambda: '#')
-  for line in data:
-    for c in line:
-      if c == "@": position = (x,y)
-      level[(x,y)] = '.' if c == "@" else c
-      x += 1
-    x = 0
-    y += 1
-
-  origin = position
+  level, position = createLevelFrom(data)
   curgraph, spaces, doors, keys = createGameFrom(level, position)
+  draw(curgraph, spaces, doors, keys, position)
 
-  allkeys = set(keys.keys())
-  mykeys = set()
-  
-  # draw(curgraph, spaces, doors, keys, position)
-
-  return recursePath(level, curgraph, allkeys, mykeys, position, origin)
+  return "No solution found yet"
 
 with open('input.txt', 'r') as file:
   raw = file.read().splitlines()
