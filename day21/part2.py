@@ -79,7 +79,6 @@ def solve(data):
     # Jump if C is a hole and D is not
     "NOT C T",
     "OR T J",
-    "AND D J",
 
     # But only jump if not E and H are both holes!
     "NOT E T",
@@ -89,6 +88,14 @@ def solve(data):
 
     # Always jump if a hole is in front of you
     "NOT A T",
+    "OR T J",
+    "AND D J",
+
+    # If there's a hole on B and E we might as well jump now
+    "NOT B T",
+    "NOT T T",
+    "OR E T",
+    "NOT T T",
     "OR T J",
 
     # Then...
@@ -116,6 +123,7 @@ def solve(data):
       markers = [" "] * (pos+1) + ["ABCDEFGHI"]
       print("".join(markers)[:len(line)])
 
+  # Reverse-engineered the memory slot with the score using part 1, so:
   print(f"Presumably our score: {program[754]:,}")
 
   return result
