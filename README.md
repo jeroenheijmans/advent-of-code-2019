@@ -31,7 +31,7 @@ Here are the lessons learned for each day:
 18. TODO
 19. Code can be ugly and beautiful at the same time.
 20. **Map hard problems to easy problems, then solve those**.
-21. TODO
+21. **Know when you need help, when you want help, and when they coincide (or not)**.
 22. TODO
 23. TODO
 24. TODO
