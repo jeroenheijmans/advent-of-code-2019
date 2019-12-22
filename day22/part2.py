@@ -1,12 +1,9 @@
-from time import time
-
 def deckstring(deck):
   return " ".join([str(n) for n in deck])
 
-def solve(data, size):
+def solve(data, size, times):
   my2020s = []
   step = 0
-  start = time()
   deck = list(range(size))
 
   program = []
@@ -20,9 +17,7 @@ def solve(data, size):
       n = int(line.replace("cut ", ""))
       program.append((3, n))
 
-  while True:
-    # if step % 10 == 0: print(f"Step {step} time {str(round(time() - start, 4))}")
-
+  for i in range(times):
     for op in program:
       n = op[1]
 
@@ -37,11 +32,6 @@ def solve(data, size):
       
       if op[0] == 3:
         deck = deck[n:] + deck[:n]
-    
-    print(deck.index(2020))
-    step += 1
-    if deck[2020] in my2020s or step >= 100: break
-    my2020s.append(deck[2020])
 
   print("At step", step, "it is", my2020s)
 
@@ -50,4 +40,4 @@ def solve(data, size):
 with open('input.txt', 'r') as file:
   raw = file.read().splitlines()
 
-print("Solution:", solve(raw, 10007))
+print("Solution:", solve(raw, size = 119_315_717_514_047, times = 101_741_582_076_661))
