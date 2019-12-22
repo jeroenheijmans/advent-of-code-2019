@@ -7,8 +7,7 @@ from collections import defaultdict
 # Windows only :P
 clear = lambda: os.system('cls')
 
-def runComputer(data, input):
-  program = defaultdict(int, { k: v for k, v in enumerate(data) })
+def runComputer(program, input):
   output = None
   i = 0
   relbase = 0
@@ -71,11 +70,11 @@ def addMovesToInputStack(moves, inputsStack):
 
 def solve(data):
   inputs = []
-  runner = runComputer(data, inputs)
+  program = defaultdict(int, { k: v for k, v in enumerate(data) })
+  runner = runComputer(program, inputs)
   level = ""
   result = None
   moves = [
-    
     # Jump if H and D are floors
     "OR H T",
     "AND D T",
@@ -85,7 +84,7 @@ def solve(data):
     "NOT A T",
     "OR T J",
 
-    # Then run
+    # Then...
     "RUN",
   ]
   addMovesToInputStack(moves, inputs)
@@ -109,6 +108,8 @@ def solve(data):
     if line[:1] == "#":
       markers = [" "] * (pos+1) + ["ABCDEFGHI"]
       print("".join(markers)[:len(line)])
+
+  print(f"Presumably our score: {program[754]:,}")
 
   return result
 
