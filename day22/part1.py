@@ -1,61 +1,45 @@
-def deckstring(deck):
-  return " ".join([str(n) for n in deck])
+def rev(position, size):
+  return size - position - 1
+
+def inc(position, size, n):
+  return (n * position) % size
+
+def cut(position, size, n):
+  return position - n if position >= n else size - (n - position)
 
 def solve(data, size):
-  deck = list(range(size))
-
+  program = []
   for line in [x.strip() for x in data]:
-
     if "deal into new stack" in line:
-      deck.reverse()
-      if size < 20: print(f'reverse _ result {deckstring(deck)}')
-    
+      program.append((1, None))
     if "deal with increment" in line:
       n = int(line.replace("deal with increment ", ""))
-      newdeck = [0] * size
-      for i in range(size):
-        newdeck[(i*n) % size] = deck[i]
-      deck = newdeck
-      if size < 20: print(f"dealinc {n} result {deckstring(deck)}")
-    
+      program.append((2, n))
     if "cut" in line:
       n = int(line.replace("cut ", ""))
-      deck = deck[n:] + deck[:n]
-      if size < 20: print(f"cutting {n} result {deckstring(deck)}")
+      program.append((3, n))
 
-  if size < 20:
-    print("Final deck:", deckstring(deck))
+  position = 2019
 
-  return deck.index(2019) if 2019 in deck else None
+  for op in program:
+    if op[0] == 1: position = rev(position, size)
+    elif op[0] == 2: position = inc(position, size, op[1])
+    elif op[0] == 3: position = cut(position, size, op[1])
+
+  return position
 
 with open('input.txt', 'r') as file:
   raw = file.read().splitlines()
 
-# print("Test 0:", solve("""
-#   deal into new stack
-# """.splitlines(), 10))
-
-print("Test 1:", solve("""
-  deal with increment 7
-  deal into new stack
-  deal into new stack
-""".splitlines(), 10))
-print("Should be: ", "0 3 6 9 2 5 8 1 4 7\n")
-
-print("Test 2:", solve("""
-  cut 6
-  deal with increment 7
-  deal into new stack
-""".splitlines(), 10))
-print("Should be: ", "3 0 7 4 1 8 5 2 9 6\n")
-
-print("Test 3:", solve("""
-  deal with increment 7
-  deal with increment 9
-  cut -2
-""".splitlines(), 10))
-print("Should be: ", "6 3 0 7 4 1 8 5 2 9\n")
-
-# Not 2916
-# Not 7168
+print("Tests:")
+print("rev 0 =?", rev(9, 10))
+print("rev 9 =?", rev(0, 10))
+print("inc 9 =?", inc(3, 10, 3))
+print("inc 2 =?", inc(4, 10, 3))
+print("cut 9 =?", cut(2, 10, 3))
+print("cut 7 =?", cut(0, 10, 3))
+print("cut 4 =?", cut(0, 10, -4))
+print("cut 5 =?", cut(1, 10, -4))
+print("cut 9 =?", cut(5, 10, -4))
+print()
 print("Solution:", solve(raw, 10007))
