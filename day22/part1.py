@@ -31,15 +31,4 @@ def solve(data, size):
 with open('input.txt', 'r') as file:
   raw = file.read().splitlines()
 
-print("Tests:")
-print("rev 0 =?", rev(9, 10))
-print("rev 9 =?", rev(0, 10))
-print("inc 9 =?", inc(3, 10, 3))
-print("inc 2 =?", inc(4, 10, 3))
-print("cut 9 =?", cut(2, 10, 3))
-print("cut 7 =?", cut(0, 10, 3))
-print("cut 4 =?", cut(0, 10, -4))
-print("cut 5 =?", cut(1, 10, -4))
-print("cut 9 =?", cut(5, 10, -4))
-print()
 print("Solution:", solve(raw, 10007))
