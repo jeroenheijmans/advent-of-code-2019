@@ -41,7 +41,7 @@ def draw(g, spaces, doors, keys, position):
 
   plt.show()
 
-def createGameFrom(level, position):
+def createGameFrom(level, position) -> (nx.Graph, set(), dict(), dict()):
   keepgoing = True
   visited = set([position])
   tovisit = set([position])
@@ -122,7 +122,26 @@ def createGameFrom(level, position):
 def solve(data):
   level, position = createLevelFrom(data)
   curgraph, spaces, doors, keys = createGameFrom(level, position)
-  draw(curgraph, spaces, doors, keys, position)
+  # draw(curgraph, spaces, doors, keys, position)
+
+  allkeys = frozenset(keys.keys())
+  alldoors = frozenset(doors.keys())
+  states = { (position, frozenset()): 0 }
+  
+  for state in states:
+    neededKeys = allkeys - state[1]
+    closeddoors = alldoors - set([x for x in state[1]])
+    closeddoorspoints = set([doors[k] for k in closeddoors])
+    targets = [keys[k] for k in keys if k in neededKeys]
+    paths = [nx.single_source_dijkstra(curgraph, state[0], t, weight="weight") for t in targets]
+    paths = [
+      p for p in paths
+      if not set(p[1]) & closeddoorspoints
+    ]
+    # Show all reachable keys and their costs and their paths:
+    for p in paths: print(p, [level[x] for x in p[1]])
+    
+
 
   return "No solution found yet"
 
