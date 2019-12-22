@@ -1,3 +1,6 @@
+def num(line):
+  return int(''.join(filter(lambda x: x.isdigit() or x == "-", line)))
+
 def rev(position, size):
   return size - position - 1
 
@@ -8,16 +11,13 @@ def cut(position, size, n):
   return position - n if position >= n else size - (n - position)
 
 def solve(data, size):
-  program = []
-  for line in [x.strip() for x in data]:
-    if "deal into new stack" in line:
-      program.append((1, None))
-    if "deal with increment" in line:
-      n = int(line.replace("deal with increment ", ""))
-      program.append((2, n))
-    if "cut" in line:
-      n = int(line.replace("cut ", ""))
-      program.append((3, n))
+  program = [
+    (1, None) if "stack" in line else
+    (2, num(line)) if "inc" in line else
+    (3, num(line)) if "cut" in line else
+    None # Problem!
+    for line in data
+  ]
 
   position = 2019
 
