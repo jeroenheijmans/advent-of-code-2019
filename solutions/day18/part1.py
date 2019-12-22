@@ -135,7 +135,7 @@ def solve(data):
     closeddoorspoints = set([doors[k] for k in closeddoors])
     targets = [keys[k] for k in keys if k in neededKeys]
     paths = [
-      nx.single_source_dijkstra(curgraph, state[0], t, weight="weight") 
+      nx.single_source_dijkstra(curgraph, state[0], t, weight=lambda u, v, d: d["weight"]) # TODO: Improve speed by filtering closed doors here?
       for t in targets
     ]
     paths = [
@@ -148,11 +148,11 @@ def solve(data):
       newpos = path[-1]
       newkeys = frozenset(state[1] | { level[newpos] })
       newstate = (newpos, newkeys)
-      newstates[newstate] = newcost
+      newstates[newstate] = min(newcost, newstates[newstate]) if newstate in newstates else newcost
     
     for s in newstates: print(newstates[s], s)
-      
-    
+
+    # TODO: Search deeper
 
 
   return "No solution found yet"
