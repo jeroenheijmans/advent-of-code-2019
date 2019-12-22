@@ -4,7 +4,7 @@ def deckstring(deck):
   return " ".join([str(n) for n in deck])
 
 def solve(data, size):
-  decks = set()
+  my2020s = []
   step = 0
   start = time()
   deck = list(range(size))
@@ -21,7 +21,7 @@ def solve(data, size):
       program.append((3, n))
 
   while True:
-    if step % 10 == 0: print(f"Step {step} time {str(round(time() - start, 4))}")
+    # if step % 10 == 0: print(f"Step {step} time {str(round(time() - start, 4))}")
 
     for op in program:
       n = op[1]
@@ -38,12 +38,12 @@ def solve(data, size):
       if op[0] == 3:
         deck = deck[n:] + deck[:n]
     
+    print(deck.index(2020))
     step += 1
-    txt = deckstring(deck)
-    if txt in decks: break
-    decks.add(txt)
+    if deck[2020] in my2020s or step >= 100: break
+    my2020s.append(deck[2020])
 
-  print("Repeating at", step)
+  print("At step", step, "it is", my2020s)
 
   return deck[2020] if size > 2020 else None
 
