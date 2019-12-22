@@ -1,43 +1,36 @@
-def deckstring(deck):
-  return " ".join([str(n) for n in deck])
+def num(line):
+  return int(''.join(filter(lambda x: x.isdigit() or x == "-", line)))
+
+def rev(position, size):
+  return size - position - 1
+
+def inc(position, size, n):
+  return (n * position) % size
+
+def cut(position, size, n):
+  return position - n if position >= n else size - (n - position)
 
 def solve(data, size, times):
-  my2020s = []
-  step = 0
-  deck = list(range(size))
+  program = [
+    (1, None) if "stack" in line else
+    (2, num(line)) if "inc" in line else
+    (3, num(line)) if "cut" in line else
+    None # Problem!
+    for line in data
+  ]
 
-  program = []
-  for line in [x.strip() for x in data]:
-    if "deal into new stack" in line:
-      program.append((1, None))
-    if "deal with increment" in line:
-      n = int(line.replace("deal with increment ", ""))
-      program.append((2, n))
-    if "cut" in line:
-      n = int(line.replace("cut ", ""))
-      program.append((3, n))
+  position = 2019
 
-  for i in range(times):
-    for op in program:
-      n = op[1]
+  for op in program:
+    if op[0] == 1: position = rev(position, size)
+    elif op[0] == 2: position = inc(position, size, op[1])
+    elif op[0] == 3: position = cut(position, size, op[1])
 
-      if op[0] == 1:
-        deck.reverse()
-      
-      if op[0] == 2:
-        newdeck = [0] * size
-        for i in range(size):
-          newdeck[(i*n) % size] = deck[i]
-        deck = newdeck
-      
-      if op[0] == 3:
-        deck = deck[n:] + deck[:n]
-
-  print("At step", step, "it is", my2020s)
-
-  return deck[2020] if size > 2020 else None
+  return position
 
 with open('input.txt', 'r') as file:
   raw = file.read().splitlines()
 
-print("Solution:", solve(raw, size = 119_315_717_514_047, times = 101_741_582_076_661))
+print("Verify part 1", solve(raw, size = 10007, times = 1))
+
+# print("Solution:", solve(raw, size = 119_315_717_514_047, times = 101_741_582_076_661))
