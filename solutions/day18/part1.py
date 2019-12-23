@@ -167,4 +167,5 @@ with open('input.txt', 'r') as file:
 # Not 3976
 # Not 4208
 # Not 3984 -- now have to wait 10 minutes after guessing incorrectly 7 times...
+# Not 3914 (manual guess) - lockout of 10 minutes again
 print("Part 1:", solve(raw))
