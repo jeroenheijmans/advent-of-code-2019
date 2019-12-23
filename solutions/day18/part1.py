@@ -4,7 +4,7 @@ from collections import defaultdict
 
 def createLevelFrom(data):
   x, y = 0, 0
-  level = defaultdict(lambda: '#')
+  level = dict()
   for line in data:
     for c in line:
       if c == "@": position = (x,y)
@@ -21,7 +21,7 @@ def neighbors(level, p):
     (p[0] - 1, p[1]),
     (p[0], p[1] + 1),
     (p[0], p[1] - 1),
-  ] if level[x] != "#"]
+  ] if x in level and level[x] != "#"]
 
 def draw(g, spaces, doors, keys, position):
   pos = nx.get_node_attributes(g, 'pos')
@@ -42,56 +42,24 @@ def draw(g, spaces, doors, keys, position):
   plt.show()
 
 def createGameFrom(level, position) -> (nx.Graph, set(), dict(), dict()):
-  keepgoing = True
-  visited = set([position])
-  tovisit = set([position])
-  nextvisits = set()
   spaces = set()
   keys = dict()
   doors = dict()
   
-  # Start by marking the starting position:
   curgraph = nx.Graph()
-  curgraph.add_node(position, label="@", pos=(position[0], -position[1]))
 
-  while keepgoing:
-    for p in tovisit:
-      for n in neighbors(level, p):
-        if n in visited or level[n] in ["#", "@"]:
-          continue
-
-        weight = 1
-        if level[n] in ["."]:
-          # Try to condense hallways:
-          while True:
-            nextneighbors = neighbors(level, n)
-            others = [x for x in nextneighbors if x != p and x != n and x not in visited]
-            if len(others) != 1 or level[others[0]] != ".": break
-            visited.add(n)
-            n = others[0]
-            weight += 1
-          # Add empty space:
-          nextvisits.add(n)
-          visited.add(n)
-          spaces.add(n)
-
-        elif level[n].islower():
-          nextvisits.add(n)
-          visited.add(n)
-          keys[level[n]] = n
-        
-        else:
-          nextvisits.add(n)
-          visited.add(n)
-          doors[level[n].lower()] = n
-
-        label = '' if level[n] == '.' else level[n]
-        curgraph.add_node(n, pos=(n[0], -n[1]), label=label)
-        curgraph.add_edge(p, n, weight=weight)
-
-    keepgoing = len(nextvisits) > 0
-    tovisit = nextvisits
-    nextvisits = set()
+  for p in level:
+    if level[p] == "#": continue
+    if level[p] == ".": spaces.add(p)
+    if level[p].isupper(): doors[level[p].lower()] = p
+    if level[p].islower(): keys[level[p]] = p
+    label = "" if level[p] == "." else level[p]
+    curgraph.add_node(p, pos=(p[0], -p[1]), label=label)
+  
+  for p in level:
+    for n in neighbors(level, p):
+      if n in curgraph.nodes() and p in curgraph.nodes():
+        curgraph.add_edge(p, n, weight=1)
 
   # Remove leaves, both spaces and dead-end doors:
   keepgoing = True
@@ -115,7 +83,7 @@ def createGameFrom(level, position) -> (nx.Graph, set(), dict(), dict()):
     potentials = [x for x in curgraph.nodes() if len(list(curgraph.neighbors(x))) == 2]
     for pot in potentials:
       others = list(curgraph.neighbors(pot))
-      if pot in spaces and len(others) == 2:
+      if pot in spaces and len(others) == 2 and pot != position:
         weight = curgraph.edges[others[0], pot]['weight'] + curgraph.edges[others[1], pot]['weight']
         curgraph.remove_node(pot)
         spaces.remove(pot)
@@ -162,7 +130,6 @@ def solve(data):
 
     done = False
     for state in [s for s in states if s[1] == allkeys]:
-      # print(f"Found cost {states[state]} at {state[0]} keys {''.join(sorted(state[1]))}")
       done = True
     if done: break
 
@@ -173,15 +140,13 @@ def solveFromFile(file):
     return solve(file.read().splitlines())
 
 print("TESTS:")
+print("Custom 001. Expected   14 ==", solveFromFile("custom001.txt"), "\n")
 print("Example 001. Expected   8 ==", solveFromFile("example001.txt"), "\n")
 print("Example 002. Expected  86 ==", solveFromFile("example002.txt"), "\n")
 print("Example 003. Expected 132 ==", solveFromFile("example003.txt"), "\n")
 print("Example 004. Expected 136 ==", solveFromFile("example004.txt"), "\n")
-print("Example 005. Expected  81 ==", solveFromFile("example005.txt"), "\n\n")
+print("Example 005. Expected  81 ==", solveFromFile("example005.txt"), "\n")
 
-# Not 3976
-# Not 3984 -- now have to wait 10 minutes after guessing incorrectly 7 times...
-# Not 3914 (manual guess) - lockout of 10 minutes again
-# Not 3876 - lockout 10 mins at 15:36 local time :P this answer even came from the algorithm
-# Not 3868 after tweaking the level hoping it doesn't make a weird connection...
+print("FINAL ANSWER:")
+
 print("Part 1:", solveFromFile("input.txt"))
