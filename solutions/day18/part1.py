@@ -135,7 +135,7 @@ def solve(data):
   while True:
     newstates = dict()
 
-    print(f"Recursing. First state: {next(iter(states))}")
+    print(f"Recursing. First state with nr of keys: {len(next(iter(states))[1])}")
 
     for state in states:
       neededKeys = allkeys - state[1]
@@ -162,23 +162,26 @@ def solve(data):
 
     done = False
     for state in [s for s in states if s[1] == allkeys]:
-      print(f"Found cost {states[state]} at {state[0]} keys {''.join(sorted(state[1]))}")
+      # print(f"Found cost {states[state]} at {state[0]} keys {''.join(sorted(state[1]))}")
       done = True
     if done: break
 
   return min(states.values())
 
-with open('input.txt', 'r') as file:
-  raw = file.read().splitlines()
+def solveFromFile(file):
+  with open(file, 'r') as file:
+    return solve(file.read().splitlines())
 
-# Not 7071 - too high :'(
-# Not 5014 -- too high still
-# Not 4906 -- too high yet again
-# Not 4674
+print("TESTS:")
+print("Example 001. Expected   8 ==", solveFromFile("example001.txt"), "\n")
+print("Example 002. Expected  86 ==", solveFromFile("example002.txt"), "\n")
+print("Example 003. Expected 132 ==", solveFromFile("example003.txt"), "\n")
+print("Example 004. Expected 136 ==", solveFromFile("example004.txt"), "\n")
+print("Example 005. Expected  81 ==", solveFromFile("example005.txt"), "\n\n")
+
 # Not 3976
-# Not 4208
 # Not 3984 -- now have to wait 10 minutes after guessing incorrectly 7 times...
 # Not 3914 (manual guess) - lockout of 10 minutes again
 # Not 3876 - lockout 10 mins at 15:36 local time :P this answer even came from the algorithm
 # Not 3868 after tweaking the level hoping it doesn't make a weird connection...
-print("Part 1:", solve(raw))
+print("Part 1:", solveFromFile("input.txt"))
