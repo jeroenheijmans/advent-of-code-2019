@@ -72,17 +72,22 @@ def solve(data):
     q.append(i) # provide network address
 
   idlecount = 0
+  natready = False
   natmemory = (None, None)
+  lasty = None
 
   while True:
-    if idlecount == 50 and natmemory[0]:
+    if idlecount == 50 and natready:
       print(f"Idle count was 50 so sending {natmemory}")
+      if lasty == natmemory[1]: return lasty
       inputs[0].append(natmemory[0])
       inputs[0].append(natmemory[1])
+      natready = False
+      lasty = natmemory[1]
 
     idlecount = 0
 
-    print("Looping 50 computers")
+    # print("Looping 50 computers")
     for i in range(50):
       addr = next(computers[i])
 
@@ -94,11 +99,11 @@ def solve(data):
 
       if addr == 255:
         print(f"NAT notified of ({x}, {y})")
-        if y == natmemory[1]: return y
         natmemory = (x,y)
+        natready = True
         continue
 
-      print(f"Computer {i} sending to {addr} packet ({x}, {y})")
+      # print(f"Computer {i} sending to {addr} packet ({x}, {y})")
       inputs[addr].append(x)
       inputs[addr].append(y)
 
@@ -107,5 +112,5 @@ def solve(data):
 with open('input.txt', 'r') as file:
   raw = list(map(int, file.read().splitlines()[0].split(",")))
 
-# Not 17499 :(
+# Not 17499, too high
 print("Solution:", solve(raw))
