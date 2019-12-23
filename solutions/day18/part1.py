@@ -93,17 +93,21 @@ def createGameFrom(level, position) -> (nx.Graph, set(), dict(), dict()):
     tovisit = nextvisits
     nextvisits = set()
 
-  # Remove leaves without doors and keys:
+  # Remove leaves, both spaces and dead-end doors:
   keepgoing = True
   while keepgoing:
     keepgoing = False
-    leaves = [x for x in curgraph.nodes() if x != position and len(list(curgraph.neighbors(x))) == 1]
+    leaves = [
+      x for x in curgraph.nodes()
+      if x != position and len(list(curgraph.neighbors(x))) == 1
+    ]
     for leaf in leaves:
-      if level[leaf] == ".":
+      if level[leaf] == "." or level[leaf].isupper():
         keepgoing = True
         curgraph.remove_node(leaf)
-        spaces.remove(leaf)
-  
+        if level[leaf] == ".": spaces.remove(leaf) 
+        else: del doors[level[leaf].lower()]
+
   # Another round of condensing hallways:
   keepgoing = True
   while keepgoing:
@@ -122,7 +126,7 @@ def createGameFrom(level, position) -> (nx.Graph, set(), dict(), dict()):
 def solve(data):
   level, position = createLevelFrom(data)
   curgraph, spaces, doors, keys = createGameFrom(level, position)
-  # draw(curgraph, spaces, doors, keys, position)
+  draw(curgraph, spaces, doors, keys, position)
 
   allkeys = frozenset(keys.keys())
   alldoors = frozenset(doors.keys())
