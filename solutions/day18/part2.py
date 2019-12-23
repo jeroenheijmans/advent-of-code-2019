@@ -12,8 +12,22 @@ def createLevelFrom(data):
       x += 1
     x = 0
     y += 1
+
+  # Adjust for part 2:
+  level[position] = "#"
+  level[(position[0] - 1, position[1] + 0)] = "#"
+  level[(position[0] + 1, position[1] + 0)] = "#"
+  level[(position[0] + 0, position[1] + 1)] = "#"
+  level[(position[0] + 0, position[1] - 1)] = "#"
+
+  positions = (
+    (position[0] - 1, position[1] - 1),
+    (position[0] - 1, position[1] + 1),
+    (position[0] + 1, position[1] - 1),
+    (position[0] + 1, position[1] + 1),
+  )
   
-  return level, position
+  return level, positions
 
 def neighbors(level, p):
   return [x for x in [
@@ -23,10 +37,10 @@ def neighbors(level, p):
     (p[0], p[1] - 1),
   ] if x in level and level[x] != "#"]
 
-def draw(g, spaces, doors, keys, position):
+def draw(g, spaces, doors, keys, positions):
   pos = nx.get_node_attributes(g, 'pos')
   
-  nx.draw_networkx_nodes(g, pos, node_size=200, nodelist=[position], node_color='#eeee00', alpha=0.9)
+  nx.draw_networkx_nodes(g, pos, node_size=200, nodelist=positions, node_color='#eeee00', alpha=0.9)
   nx.draw_networkx_nodes(g, pos, node_size=30, nodelist=spaces, node_color='#00aaee', alpha=0.8)
   nx.draw_networkx_nodes(g, pos, node_size=150, nodelist=doors.values(), node_color='#ee0033', alpha=0.8)
   nx.draw_networkx_nodes(g, pos, node_size=150, nodelist=keys.values(), node_color='#33ee66', alpha=0.8)
@@ -41,7 +55,7 @@ def draw(g, spaces, doors, keys, position):
 
   plt.show()
 
-def createGameFrom(level, position) -> (nx.Graph, set(), dict(), dict()):
+def createGameFrom(level, positions) -> (nx.Graph, set(), dict(), dict()):
   spaces = set()
   keys = dict()
   doors = dict()
@@ -67,7 +81,7 @@ def createGameFrom(level, position) -> (nx.Graph, set(), dict(), dict()):
     keepgoing = False
     leaves = [
       x for x in curgraph.nodes()
-      if x != position and len(list(curgraph.neighbors(x))) == 1
+      if x not in positions and len(list(curgraph.neighbors(x))) == 1
     ]
     for leaf in leaves:
       if level[leaf] == "." or level[leaf].isupper():
@@ -83,7 +97,7 @@ def createGameFrom(level, position) -> (nx.Graph, set(), dict(), dict()):
     potentials = [x for x in curgraph.nodes() if len(list(curgraph.neighbors(x))) == 2]
     for pot in potentials:
       others = list(curgraph.neighbors(pot))
-      if pot in spaces and len(others) == 2 and pot != position:
+      if pot in spaces and len(others) == 2 and pot not in positions:
         weight = curgraph.edges[others[0], pot]['weight'] + curgraph.edges[others[1], pot]['weight']
         curgraph.remove_node(pot)
         spaces.remove(pot)
@@ -92,13 +106,16 @@ def createGameFrom(level, position) -> (nx.Graph, set(), dict(), dict()):
   return curgraph, spaces, doors, keys
 
 def solve(data):
-  level, position = createLevelFrom(data)
-  curgraph, spaces, doors, keys = createGameFrom(level, position)
-  # draw(curgraph, spaces, doors, keys, position)
+  level, positions = createLevelFrom(data)
+  curgraph, spaces, doors, keys = createGameFrom(level, positions)
+  # draw(curgraph, spaces, doors, keys, positions)
 
   allkeys = frozenset(keys.keys())
   alldoors = frozenset(doors.keys())
-  states = { (position, frozenset()): 0 }
+  states = { (positions, frozenset()): 0 }
+
+  midx = min([x for x,_ in positions]) + 1
+  midy = min([y for _,y in positions]) + 1
   
   while True:
     newstates = dict()
@@ -109,20 +126,23 @@ def solve(data):
       neededKeys = allkeys - state[1]
       closeddoors = alldoors - set([x for x in state[1]])
       closeddoorspoints = set([doors[k] for k in closeddoors])
-      targets = [keys[k] for k in keys if k in neededKeys]
-      paths = [
-        nx.single_source_dijkstra(curgraph, state[0], t, weight=lambda u, v, d: d["weight"]) # TODO: Improve speed by filtering closed doors here?
-        for t in targets
-      ]
-      paths = [
-        p for p in paths
-        if not set(p[1]) & closeddoorspoints
-      ]
-      # Show all reachable keys and their costs and their paths:
-      for weight,path in paths:
+
+      for target in [keys[k] for k in keys if k in neededKeys]:
+        if target[0] < midx and target[1] < midy: boti = 0
+        elif target[0] < midx and target[1] > midy: boti = 1
+        elif target[0] > midx and target[1] < midy: boti = 2
+        elif target[0] > midx and target[1] > midy: boti = 3
+
+        weight, path = nx.single_source_dijkstra(curgraph, state[0][boti], target, weight="weight")
+
+        if set(path) & closeddoorspoints: continue
+
         newcost = states[state] + weight
-        newpos = path[-1]
-        newkeys = frozenset(state[1] | { level[newpos] })
+        if boti == 0: newpos = (path[-1], state[0][1], state[0][2], state[0][3])
+        elif boti == 1: newpos = (state[0][0], path[-1], state[0][2], state[0][3])
+        elif boti == 2: newpos = (state[0][0], state[0][1], path[-1], state[0][3])
+        elif boti == 3: newpos = (state[0][0], state[0][1], state[0][2], path[-1])
+        newkeys = frozenset(state[1] | { level[path[-1]] })
         newstate = (newpos, newkeys)
         newstates[newstate] = min(newcost, newstates[newstate]) if newstate in newstates else newcost
 
@@ -139,14 +159,4 @@ def solveFromFile(file):
   with open(file, 'r') as file:
     return solve(file.read().splitlines())
 
-print("TESTS:")
-print("Custom 001. Expected   14 ==", solveFromFile("custom001.txt"), "\n")
-print("Example 001. Expected   8 ==", solveFromFile("example001.txt"), "\n")
-print("Example 002. Expected  86 ==", solveFromFile("example002.txt"), "\n")
-print("Example 003. Expected 132 ==", solveFromFile("example003.txt"), "\n")
-print("Example 004. Expected 136 ==", solveFromFile("example004.txt"), "\n")
-print("Example 005. Expected  81 ==", solveFromFile("example005.txt"), "\n")
-
-print("FINAL ANSWER:")
-
-print("Part 1:", solveFromFile("input.txt"))
+print("Part 2:", solveFromFile("input.txt"))
