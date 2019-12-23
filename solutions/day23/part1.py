@@ -36,8 +36,13 @@ def runComputer(data, inputqueue: deque, inputDefault = lambda: -1):
       program[p3] = program[p1] * program[p2]
       i += 4
     elif opcode == 3: # input
-      program[p1] = inputqueue.popleft() if len(inputqueue) > 0 else inputDefault()
-      i += 2
+      if len(inputqueue) > 0:
+        program[p1] = inputqueue.popleft()
+        i += 2
+      else:
+        program[p1] = inputDefault()
+        i += 2
+        yield "CONTINUE"
     elif opcode == 4: # output
       yield program[p1]
       i += 2
@@ -68,14 +73,17 @@ def solve(data):
 
   while True:
     for i in range(50):
-      print(f"Computer {i} asked to run")
-      addr, x, y = next(computers[i]), next(computers[i]), next(computers[i])
+      addr = next(computers[i])
+
+      if addr == "CONTINUE": continue
+
+      x, y = next(computers[i]), next(computers[i])
 
       if addr == 255:
         print(f"x = {x} and y = {y}")
         return y
 
-      print(f"Computer {i} sending to {addr} packet ({x}, {y})")
+      # print(f"Computer {i} sending to {addr} packet ({x}, {y})")
       inputs[addr].append(x)
       inputs[addr].append(y)
 
