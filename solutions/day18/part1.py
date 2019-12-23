@@ -126,40 +126,47 @@ def createGameFrom(level, position) -> (nx.Graph, set(), dict(), dict()):
 def solve(data):
   level, position = createLevelFrom(data)
   curgraph, spaces, doors, keys = createGameFrom(level, position)
-  draw(curgraph, spaces, doors, keys, position)
+  # draw(curgraph, spaces, doors, keys, position)
 
   allkeys = frozenset(keys.keys())
   alldoors = frozenset(doors.keys())
   states = { (position, frozenset()): 0 }
-  newstates = dict()
   
-  for state in states:
-    neededKeys = allkeys - state[1]
-    closeddoors = alldoors - set([x for x in state[1]])
-    closeddoorspoints = set([doors[k] for k in closeddoors])
-    targets = [keys[k] for k in keys if k in neededKeys]
-    paths = [
-      nx.single_source_dijkstra(curgraph, state[0], t, weight=lambda u, v, d: d["weight"]) # TODO: Improve speed by filtering closed doors here?
-      for t in targets
-    ]
-    paths = [
-      p for p in paths
-      if not set(p[1]) & closeddoorspoints
-    ]
-    # Show all reachable keys and their costs and their paths:
-    for weight,path in paths:
-      newcost = states[state] + weight
-      newpos = path[-1]
-      newkeys = frozenset(state[1] | { level[newpos] })
-      newstate = (newpos, newkeys)
-      newstates[newstate] = min(newcost, newstates[newstate]) if newstate in newstates else newcost
-    
-    for s in newstates: print(newstates[s], s)
+  while True:
+    newstates = dict()
 
-    # TODO: Search deeper
+    print(f"Recursing. First state: {next(iter(states))}")
 
+    for state in states:
+      neededKeys = allkeys - state[1]
+      closeddoors = alldoors - set([x for x in state[1]])
+      closeddoorspoints = set([doors[k] for k in closeddoors])
+      targets = [keys[k] for k in keys if k in neededKeys]
+      paths = [
+        nx.single_source_dijkstra(curgraph, state[0], t, weight=lambda u, v, d: d["weight"]) # TODO: Improve speed by filtering closed doors here?
+        for t in targets
+      ]
+      paths = [
+        p for p in paths
+        if not set(p[1]) & closeddoorspoints
+      ]
+      # Show all reachable keys and their costs and their paths:
+      for weight,path in paths:
+        newcost = states[state] + weight
+        newpos = path[-1]
+        newkeys = frozenset(state[1] | { level[newpos] })
+        newstate = (newpos, newkeys)
+        newstates[newstate] = min(newcost, newstates[newstate]) if newstate in newstates else newcost
 
-  return "No solution found yet"
+    states = newstates
+
+    done = False
+    for state in [s for s in states if s[1] == allkeys]:
+      print(f"Found cost {states[state]} at {state[0]} keys {''.join(sorted(state[1]))}")
+      done = True
+    if done: break
+
+  return min(states.values())
 
 with open('input.txt', 'r') as file:
   raw = file.read().splitlines()
@@ -172,4 +179,5 @@ with open('input.txt', 'r') as file:
 # Not 4208
 # Not 3984 -- now have to wait 10 minutes after guessing incorrectly 7 times...
 # Not 3914 (manual guess) - lockout of 10 minutes again
+# Not 3876 - lockout 10 mins at 15:36 local time :P this answer even came from the algorithm
 print("Part 1:", solve(raw))
