@@ -8,10 +8,7 @@ def inc(position, size, n):
   return (n * position) % size
 
 def revinc(target, size, n):
-  # Dumb implementation for now
-  for i in range(size):
-    result = inc(i, size, n)
-    if result == target: return i
+  return pow(n, -1, size) * target % size
 
 def cut(position, size, n):
   return position - n if position >= n else size - (n - position)
@@ -43,21 +40,26 @@ def solve(data, size, times, target):
     for line in data
   ]
 
-  backwards = reversed(program)
+  backwards = list(reversed(program))
   position = target
   r = []
 
   for i in range(times):
+    r.append(position)
     for op in backwards:
       if op[0] == 1: position = rev(position, size)
       elif op[0] == 2: position = revinc(position, size, op[1])
       elif op[0] == 3: position = revcut(position, size, op[1])
-      r.append(position)
-    
-    print(list(reversed(r)))
-    return position
 
-  return "Answer not found"
+    # Debug code:
+    # if i == 10:
+    #   thing = [str(x) for x in reversed(r)]
+    #   print(thing)
+    #   with open('temp.txt', 'w', newline="\n") as file:
+    #     file.write("\n".join(thing))
+    #   return position
+
+  return position
 
 with open('input.txt', 'r') as file:
   raw = file.read().splitlines()
@@ -65,7 +67,7 @@ with open('input.txt', 'r') as file:
 decksize = 119_315_717_514_047 # Prime number, does that mean something?
 shuffles = 101_741_582_076_661 # Prime number as well, does it mean anything?
 
-part1 = solve(raw, size = 10007, times = shuffles, target = 2939)
+part1 = solve(raw, size = 10007, times = 1, target = 2939)
 print("\nVerify part 1, should be 2019, is:", part1, "\n")
 
 # Not 67591732435243 (too high)
