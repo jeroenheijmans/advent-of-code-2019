@@ -1,33 +1,25 @@
-from time import time
 from itertools import permutations, combinations
+from fractions import gcd
+from functools import reduce
 
 with open('input.txt', 'r') as file:
   data = list(file.read().splitlines())
 
+# Lowest number divisible by funciton args
+def lcm(*args):
+    return reduce(lambda a, b: a * b // gcd(a, b), args)
+
 def solve(input):
-  # Example 1 (Expected: 2772)
-  positions = [(-1, 0, 2), (2, -10, -7), (4, -8, 8), (3, 5, -1)]
-
-  # Example 2 (expected: 4_686_774_924)
-  positions = [(-8, -10, 0), (5, 5, 10), (2, -7, 3), (9, -8, -3)]
-
-  # My input (expected: puzzle answer :D)
+  # Hardcoded input
   positions = [(-8, -9,  -7), (-5,  2,  -1), (11,  8, -14), ( 1, -4, -11)]
-
-  # Made up example (expected: 168)
-  # positions = [(0,0,0), (1,0,0), (0,2,0), (3,4,5)]
-
   velocities = [(0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0)]
-  start = time()
-  startpositions = positions.copy()
-  startvelocities = velocities.copy()
 
-  startpxs = [vec[0] for vec in startpositions]
-  startpys = [vec[1] for vec in startpositions]
-  startpzs = [vec[2] for vec in startpositions]
-  startvxs = [vec[0] for vec in startvelocities]
-  startvys = [vec[1] for vec in startvelocities]
-  startvzs = [vec[2] for vec in startvelocities]
+  startpxs = [vec[0] for vec in positions]
+  startpys = [vec[1] for vec in positions]
+  startpzs = [vec[2] for vec in positions]
+  startvxs = [vec[0] for vec in velocities]
+  startvys = [vec[1] for vec in velocities]
+  startvzs = [vec[2] for vec in velocities]
 
   xinterval = None
   yinterval = None
@@ -71,19 +63,8 @@ def solve(input):
       zinterval = step
 
     if xinterval and yinterval and zinterval:
-      print("Found all intervals:", xinterval, yinterval, zinterval)
-      biggest = max([xinterval, yinterval, zinterval])
-      i = 1
-      while True:
-        result = i * biggest
-        if result % xinterval == 0 and result % yinterval == 0 and result % zinterval == 0:
-          return result
-        i += 1
-        if i % 1e7 == 0:
-          print("i", i, "time", str(round(time() - start, 4)).ljust(6, "0"), "no answer found yet")
-
-    if step % 1e6 == 0:
-      print("step", step, "time", str(round(time() - start, 4)).ljust(6, "0"), positions)
+      print("Found divisors for x, y, z:", (xinterval, yinterval, zinterval))
+      return(lcm(xinterval, yinterval, zinterval))
 
   return step
 
