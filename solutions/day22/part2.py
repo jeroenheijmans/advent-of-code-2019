@@ -32,17 +32,6 @@ print("revinc works if: 6 ==", revinc(8, 10, 3))
 print("revinc works if: 3 ==", revinc(9, 10, 3))
 print("revinc works if: 8685 ==", revinc(9806, 10007, 38))
 print()
-print("revcut works if: 3 ==", revcut(0, 10, 3))
-print("revcut works if: 4 ==", revcut(1, 10, 3))
-print("revcut works if: 5 ==", revcut(2, 10, 3))
-print("revcut works if: 6 ==", revcut(3, 10, 3))
-print("revcut works if: 7 ==", revcut(4, 10, 3))
-print("revcut works if: 8 ==", revcut(5, 10, 3))
-print("revcut works if: 9 ==", revcut(6, 10, 3))
-print("revcut works if: 0 ==", revcut(7, 10, 3))
-print("revcut works if: 1 ==", revcut(8, 10, 3))
-print("revcut works if: 2 ==", revcut(9, 10, 3))
-print()
 
 
 def solve(data, size, times, target):
@@ -73,9 +62,12 @@ def solve(data, size, times, target):
 with open('input.txt', 'r') as file:
   raw = file.read().splitlines()
 
-part1= solve(raw, size = 10007, times = 101_741_582_076_661, target = 2939)
+decksize = 119_315_717_514_047 # Prime number, does that mean something?
+shuffles = 101_741_582_076_661 # Prime number as well, does it mean anything?
+
+part1 = solve(raw, size = 10007, times = shuffles, target = 2939)
 print("\nVerify part 1, should be 2019, is:", part1, "\n")
 
 # Not 67591732435243 (too high)
-# part2 = solve(raw, size = 119_315_717_514_047, times = 101_741_582_076_661, target = 2020)
+# part2 = solve(raw, size = decksize, times = shuffles, target = 2020)
 # print("Solution:", part2)
