@@ -1,14 +1,16 @@
+def drawsingle(level):
+  size = 5 # assume a square
+  for y in range(size):
+    line = "".join([level[(x,y)] for x in range(size)])
+    print(line)
+
 def draw(levels):
   mini = min(levels.keys())
   maxi = max(levels.keys())
 
   for i in range(mini, maxi + 1):
     print("\nLevel", i)
-    level = levels[i]
-    size = 5 # assume a square
-    for y in range(size):
-      line = "".join([level[(x,y)] for x in range(size)])
-      print(line)
+    drawsingle(levels[i])
 
 def neighbors(levels, rec, p):
   ns = []
@@ -28,7 +30,7 @@ def neighbors(levels, rec, p):
     if p == (2,1): ns.extend([levels[rec - 1][p] for p in levels[rec - 1] if p[1] == 0]) # add toprow to H
     if p == (1,2): ns.extend([levels[rec - 1][p] for p in levels[rec - 1] if p[0] == 0]) # add leftrow to L
     if p == (3,2): ns.extend([levels[rec - 1][p] for p in levels[rec - 1] if p[0] == 4]) # add right to N
-    if p == (2,3): ns.extend([levels[rec - 1][p] for p in levels[rec - 1] if p[0] == 4]) # add botrow to R
+    if p == (2,3): ns.extend([levels[rec - 1][p] for p in levels[rec - 1] if p[1] == 4]) # add botrow to R
 
   return ns
 
@@ -36,27 +38,28 @@ def createlevel(data):
   level = dict()
 
   x,y = 0,0
-  for line in raw:
+  for line in data:
     for c in line:
       level[(x,y)] = c
       x += 1
     y += 1
     x = 0
 
-  return level
+  level[(2,2,)] = "?" # just to be sure
 
+  return level
 
 def solve(raw):
   levels = dict()
   levels[0] = createlevel(raw)
-  empty = createlevel(["....."] * 5)
+  empty = createlevel([".....", ".....", "..?..", ".....", "....."])
   
   for minutes in range(200):
     print(f"At minute {minutes}")
+    
     newlevels = dict()
 
-    for depth in range(-minutes, minutes+1):
-
+    for depth in range(-minutes-1, minutes+2):
       if depth not in levels:
         levels[depth] = empty.copy()
 
@@ -73,9 +76,6 @@ def solve(raw):
 
     levels = newlevels
 
-    # draw(levels)
-    # input()
-
   # draw(levels)
 
   result = 0
@@ -87,5 +87,4 @@ def solve(raw):
 with open('input.txt', 'r') as file:
   raw = file.read().splitlines()
 
-# Not 4133
 print("Solution:", solve(raw))
