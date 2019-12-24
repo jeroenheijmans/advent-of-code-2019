@@ -29,9 +29,6 @@ def solve(raw):
   layouts = set()
 
   while True:
-    draw(level)
-    # input()
-
     txt = stringify(level)
     if txt in layouts: break
     layouts.add(txt)
@@ -55,5 +52,4 @@ def solve(raw):
 with open('input.txt', 'r') as file:
   raw = file.read().splitlines()
 
-# Not 33423330 :'()
 print("Solution:", solve(raw))
