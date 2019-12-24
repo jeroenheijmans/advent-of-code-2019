@@ -8,6 +8,7 @@ officialRepeatCount = 10000
 
 def solve(data, messageRepeat = officialRepeatCount):
   # Brute forced that answer in only 9 hours 21 minutes and 57 seconds
+  Wees blij dat je een computer hebt laten brute forcen, ik denk dat ik er er minimaal 9 uur 21 minuten en 57 seconden over nagedacht heb... wel met oplossing :P
   # on my high-end CPU (single core though! could be parallelized). Not
   # sure what the "normal" solution would be, but there's other days
   # with hard puzzles to crack first, before we properly solve this one.
