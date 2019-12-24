@@ -1,3 +1,9 @@
+def draw(level):
+  size = 5 # assume a square
+  for y in range(size):
+    line = "".join([level[(x,y)] for x in range(size)])
+    print(line)
+
 def stringify(level):
   return "".join(level.values())
 
@@ -23,6 +29,9 @@ def solve(raw):
   layouts = set()
 
   while True:
+    draw(level)
+    # input()
+
     txt = stringify(level)
     if txt in layouts: break
     layouts.add(txt)
@@ -30,8 +39,8 @@ def solve(raw):
     for p in level:
       ns = neighbors(level, p)
       bugcount = sum([1 for n in ns if level[n] == "#"])
-      if bugcount == 1: newlevel[p] = "."
-      elif bugcount == 2: newlevel[p] = "#"
+      if level[p] == "#" and not bugcount == 1: newlevel[p] = "."
+      elif level[p] == "." and (bugcount == 1 or bugcount == 2): newlevel[p] = "#"
       else: newlevel[p] = level[p]
     level = newlevel
 
