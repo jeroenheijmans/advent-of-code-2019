@@ -1,3 +1,4 @@
+from itertools import combinations
 from collections import deque, defaultdict
 import os
 
@@ -71,11 +72,7 @@ def command(q, cmd):
   q.append(10)
 
 def solve(data):
-  q = deque()
-  vm = runComputer(data, q)
-  buffer = ""
-
-  plan = deque([
+  baseplan = deque([
     "north",
     "west",
     "take mug",
@@ -111,29 +108,47 @@ def solve(data):
     "east",
     "take polygon",
     "north",
-
-    
   ])
-  # plan = None
+  
+  items = ["polygon", "easter egg", "tambourine", "asterisk", "mug", "jam", "klein bottle", "cake" ]
 
+  for combi in list(combinations(items, 6)):
+    print(combi)
+    q = deque()
+    vm = runComputer(data, q)
+    buffer = ""
+    currentroom = None
+    plan = baseplan.copy()
+    
+    backup = deque([f"drop {w}" for w in items if w not in combi])
+    backup.append("east")
 
-  while True:
-    status = next(vm, "HALTED")
-    if status == "HALTED": break
+    while True:
+      status = next(vm, "HALTED")
+      if status == "HALTED": break
 
-    if status == 10:
-      print(buffer)
-      if buffer == "Command?":
-        if not plan:
-          txt = input()
-          clear()
-        else:
-          txt = plan.popleft()
-        print(txt)
-        command(q, txt)
-      buffer = ""
-    else:
-      buffer += chr(status)
+      if status == 10:
+        #print(buffer)
+        if buffer.startswith("=="): currentroom = buffer
+        if buffer == "Command?":
+          if not plan:
+            if not backup:
+              if currentroom != "== Security Checkpoint ==":
+                txt = input()
+                command(q, txt)
+                # clear()
+              else:
+                break
+            else:
+              txt = backup.popleft()
+              command(q, txt)
+              # print(txt)
+          else:
+            txt = plan.popleft()
+            command(q, txt)
+        buffer = ""
+      else:
+        buffer += chr(status)
 
   return "No solution found yet"
 
