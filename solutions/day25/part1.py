@@ -127,6 +127,8 @@ def solve(data):
       backup = deque([f"drop {w}" for w in items if w not in combi])
       backup.append("east")
       verbose = True
+      # plan = None
+      # backup = None
 
       while True:
         status = next(vm, "HALTED")
@@ -138,7 +140,7 @@ def solve(data):
           if buffer.startswith("=="): currentroom = buffer
           if buffer == "Command?":
             if not plan:
-              verbose = False
+              # verbose = False
               if not backup:
                 txt = input()
                 if txt == "break": break
