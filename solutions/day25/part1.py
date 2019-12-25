@@ -112,40 +112,39 @@ def solve(data):
   
   items = ["polygon", "easter egg", "tambourine", "asterisk", "mug", "jam", "klein bottle", "cake" ]
 
-  for size in reversed(range(1, 9)):
+  for size in range(4, 9):
     for combi in list(combinations(items, size)):
-      # My solution :D
-      if combi != ('easter egg', 'asterisk', 'jam', 'cake'): continue
-
       print(combi)
       q = deque()
       vm = runComputer(data, q)
       buffer = ""
-      currentroom = None
       plan = baseplan.copy()
+      verbose = False
+      allowinteractive = False
+      done = False
       
       backup = deque([f"drop {w}" for w in items if w not in combi])
       backup.append("east")
-      verbose = True
-      # plan = None
-      # backup = None
 
       while True:
         status = next(vm, "HALTED")
-        if status == "HALTED": break
+        if status == "HALTED":
+          if done: return "Answer above"
+          break
 
         if status == 10:
+          if "robotic voice" in buffer and not ("lighter" in buffer or "heavier" in buffer):
+            verbose = True
+            done = True
           if verbose: print(buffer)
-          if "robotic voice" in buffer: print(buffer)
-          if buffer.startswith("=="): currentroom = buffer
           if buffer == "Command?":
             if not plan:
-              # verbose = False
               if not backup:
-                txt = input()
-                if txt == "break": break
-                command(q, txt)
-                # break
+                if allowinteractive:
+                  txt = input()
+                  command(q, txt)
+                else:
+                  break
               else:
                 txt = backup.popleft()
                 command(q, txt)
