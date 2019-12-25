@@ -112,43 +112,48 @@ def solve(data):
   
   items = ["polygon", "easter egg", "tambourine", "asterisk", "mug", "jam", "klein bottle", "cake" ]
 
-  for combi in list(combinations(items, 6)):
-    print(combi)
-    q = deque()
-    vm = runComputer(data, q)
-    buffer = ""
-    currentroom = None
-    plan = baseplan.copy()
-    
-    backup = deque([f"drop {w}" for w in items if w not in combi])
-    backup.append("east")
+  for size in reversed(range(1, 9)):
+    for combi in list(combinations(items, size)):
+      # My solution :D
+      if combi != ('easter egg', 'asterisk', 'jam', 'cake'): continue
 
-    while True:
-      status = next(vm, "HALTED")
-      if status == "HALTED": break
+      print(combi)
+      q = deque()
+      vm = runComputer(data, q)
+      buffer = ""
+      currentroom = None
+      plan = baseplan.copy()
+      
+      backup = deque([f"drop {w}" for w in items if w not in combi])
+      backup.append("east")
+      verbose = True
 
-      if status == 10:
-        #print(buffer)
-        if buffer.startswith("=="): currentroom = buffer
-        if buffer == "Command?":
-          if not plan:
-            if not backup:
-              if currentroom != "== Security Checkpoint ==":
+      while True:
+        status = next(vm, "HALTED")
+        if status == "HALTED": break
+
+        if status == 10:
+          if verbose: print(buffer)
+          if "robotic voice" in buffer: print(buffer)
+          if buffer.startswith("=="): currentroom = buffer
+          if buffer == "Command?":
+            if not plan:
+              verbose = False
+              if not backup:
                 txt = input()
+                if txt == "break": break
                 command(q, txt)
-                # clear()
+                # break
               else:
-                break
+                txt = backup.popleft()
+                command(q, txt)
+                if verbose: print(txt)
             else:
-              txt = backup.popleft()
+              txt = plan.popleft()
               command(q, txt)
-              # print(txt)
-          else:
-            txt = plan.popleft()
-            command(q, txt)
-        buffer = ""
-      else:
-        buffer += chr(status)
+          buffer = ""
+        else:
+          buffer += chr(status)
 
   return "No solution found yet"
 
