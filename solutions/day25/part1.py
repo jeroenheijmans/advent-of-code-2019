@@ -1,4 +1,8 @@
 from collections import deque, defaultdict
+import os
+
+# Windows only :P
+clear = lambda: os.system('cls')
 
 def runComputer(data, inputqueue: deque, inputDefault = lambda: -1):
   program = defaultdict(int, { k: v for k, v in enumerate(data) })
@@ -62,13 +66,74 @@ def runComputer(data, inputqueue: deque, inputDefault = lambda: -1):
     else:
       raise ValueError(f'opcode {opcode} from {program[i]}')
 
-def solve(data):
-  # q = deque()
-  # vm = runComputer(data, q)
+def command(q, cmd):
+  q.extend([ord(c) for c in cmd])
+  q.append(10)
 
-  # while True:
-  #   status = next(vm, "HALTED")
-  #   if status == "HALTED": break
+def solve(data):
+  q = deque()
+  vm = runComputer(data, q)
+  buffer = ""
+
+  plan = deque([
+    "north",
+    "west",
+    "take mug",
+    "west",
+    "take easter egg",
+    "east",
+    "east",
+    "south",
+    "inv", # Hull Breach [mug, easter egg]
+
+    "south",
+    "take asterisk",
+    "south",
+    "west",
+    "north",
+    "take jam",
+    "south",
+    "east",
+    "north",
+    "inv", # Gift Wrapping Center [..., asterisk, jam]
+
+    "east",
+    "take klein bottle",
+    "south",
+    "west",
+    "take tambourine",
+    "west",
+    "take cake",
+    "east",
+    "inv", # Navigation [..., tambourine, cake]
+
+    "south",
+    "east",
+    "take polygon",
+    "north",
+
+    
+  ])
+  # plan = None
+
+
+  while True:
+    status = next(vm, "HALTED")
+    if status == "HALTED": break
+
+    if status == 10:
+      print(buffer)
+      if buffer == "Command?":
+        if not plan:
+          txt = input()
+          clear()
+        else:
+          txt = plan.popleft()
+        print(txt)
+        command(q, txt)
+      buffer = ""
+    else:
+      buffer += chr(status)
 
   return "No solution found yet"
 
