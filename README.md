@@ -32,10 +32,10 @@ Here are the lessons learned for each day:
 19. Code can be ugly and beautiful at the same time.
 20. **Map hard problems to easy problems, then solve those**.
 21. **Know when you need help, when you want help, and when they coincide (or not)**.
-22. TODO
+22. Crypto is _hard_.
 23. Async programming is hard.
 24. Nobody expects the game of life!
-25. TODO
+25. **Sleep is an essential ingredient in good programming.**
 
 ## Compendium Repositories
 
