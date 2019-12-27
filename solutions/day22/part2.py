@@ -1,37 +1,20 @@
-def num(line):
-  return int(''.join(filter(lambda x: x.isdigit() or x == "-", line)))
-
-def rev(position, size):
+def reverse(position, size):
   return size - position - 1
 
-def inc(position, size, n):
+def increment(position, size, n):
   return (n * position) % size
 
-def revinc(target, size, n):
+def reverseIncrement(target, size, n):
   return pow(n, -1, size) * target % size
 
 def cut(position, size, n):
   return position - n if position >= n else size - (n - position)
 
-def revcut(target, size, n):
+def reverseCut(target, size, n):
   return cut(target, size, -n) % size
 
-print("TESTS:")
-print("revinc works if: 0 ==", revinc(0, 10, 3))
-print("revinc works if: 7 ==", revinc(1, 10, 3))
-print("revinc works if: 4 ==", revinc(2, 10, 3))
-print("revinc works if: 1 ==", revinc(3, 10, 3))
-print("revinc works if: 8 ==", revinc(4, 10, 3))
-print("revinc works if: 5 ==", revinc(5, 10, 3))
-print("revinc works if: 2 ==", revinc(6, 10, 3))
-print("revinc works if: 9 ==", revinc(7, 10, 3))
-print("revinc works if: 6 ==", revinc(8, 10, 3))
-print("revinc works if: 3 ==", revinc(9, 10, 3))
-print("revinc works if: 8685 ==", revinc(9806, 10007, 38))
-print()
-
-
 def solve(data, size, times, target):
+  num = lambda line: int(''.join(filter(lambda x: x.isdigit() or x == "-", line)))
   program = [
     (1, None) if "stack" in line else
     (2, num(line)) if "inc" in line else
@@ -42,22 +25,14 @@ def solve(data, size, times, target):
 
   backwards = list(reversed(program))
   position = target
-  r = []
 
   for i in range(times):
-    r.append(position)
-    for op in backwards:
-      if op[0] == 1: position = rev(position, size)
-      elif op[0] == 2: position = revinc(position, size, op[1])
-      elif op[0] == 3: position = revcut(position, size, op[1])
+    if i % 1e4 == 0: print(f"Reversed complete shuffles: {i}")
 
-    # Debug code:
-    # if i == 10:
-    #   thing = [str(x) for x in reversed(r)]
-    #   print(thing)
-    #   with open('temp.txt', 'w', newline="\n") as file:
-    #     file.write("\n".join(thing))
-    #   return position
+    for op in backwards:
+      if op[0] == 1: position = reverse(position, size)
+      elif op[0] == 2: position = reverseIncrement(position, size, op[1])
+      elif op[0] == 3: position = reverseCut(position, size, op[1])
 
   return position
 
@@ -70,6 +45,5 @@ shuffles = 101_741_582_076_661 # Prime number as well, does it mean anything?
 part1 = solve(raw, size = 10007, times = 1, target = 2939)
 print("\nVerify part 1, should be 2019, is:", part1, "\n")
 
-# Not 67591732435243 (too high)
-# part2 = solve(raw, size = decksize, times = shuffles, target = 2020)
-# print("Solution:", part2)
+part2 = solve(raw, size = decksize, times = shuffles, target = 2020)
+print("Solution:", part2)
