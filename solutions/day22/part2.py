@@ -27,7 +27,7 @@ def solve(data, size, times, target):
   position = target
 
   for i in range(times):
-    if i % 1e4 == 0: print(f"Reversed complete shuffles: {i}")
+    if i % 1e4 == 0: print(f"Reversed complete shuffles: {i} (now at position {position})")
 
     for op in backwards:
       if op[0] == 1: position = reverse(position, size)
@@ -45,5 +45,6 @@ shuffles = 101_741_582_076_661 # Prime number as well, does it mean anything?
 part1 = solve(raw, size = 10007, times = 1, target = 2939)
 print("\nVerify part 1, should be 2019, is:", part1, "\n")
 
+# Not 117599454398659
 part2 = solve(raw, size = decksize, times = shuffles, target = 2020)
 print("Solution:", part2)
