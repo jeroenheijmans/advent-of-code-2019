@@ -26,7 +26,9 @@ def solve(data, size, times, target):
   backwards = list(reversed(program))
   position = target
 
-  for i in range(2221):
+  for i in reversed(range(times)):
+    if i % 1e4 == 0: print(i)
+
     for op in backwards:
       if op[0] == 1: position = reverse(position, size)
       elif op[0] == 2: position = reverseIncrement(position, size, op[1])
@@ -45,5 +47,6 @@ shuffles = 101_741_582_076_661 # Prime number as well, does it mean anything?
 
 # Not 117599454398659
 # Not 107116967390935 (assuming a recurrance size of 3828, part 2 would be 2221 shuffles in)
+# Not 67317446177430 (assuming recurrance size of 1042, remainder would be 1027 shuffles backwards)
 part2 = solve(raw, size = decksize, times = shuffles, target = 2020)
 print("Solution:", part2)
