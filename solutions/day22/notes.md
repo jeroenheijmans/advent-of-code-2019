@@ -57,6 +57,11 @@ If we plot `i` versus `N` there _is_ a clear pattern emerging:
 
 ![Pattern](pattern-seeking-002.png)
 
+Then there is the effect of the full 50-instruction shuffle on the huge part 2 deck.
+Here's a plot of the first 15k cards from the "factory order" deck, and what position they end up in:
+
+![Pattern](pattern-seeking-003.png)
+
 But where to go from here?
 
 ## Final notes
