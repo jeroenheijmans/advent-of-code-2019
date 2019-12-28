@@ -26,9 +26,7 @@ def solve(data, size, times, target):
   backwards = list(reversed(program))
   position = target
 
-  for i in range(times):
-    if i % 1e4 == 0: print(f"Reversed complete shuffles: {i} (now at position {position})")
-
+  for i in range(2221):
     for op in backwards:
       if op[0] == 1: position = reverse(position, size)
       elif op[0] == 2: position = reverseIncrement(position, size, op[1])
@@ -42,9 +40,10 @@ with open('input.txt', 'r') as file:
 decksize = 119_315_717_514_047 # Prime number, does that mean something?
 shuffles = 101_741_582_076_661 # Prime number as well, does it mean anything?
 
-part1 = solve(raw, size = 10007, times = 1, target = 2939)
-print("\nVerify part 1, should be 2019, is:", part1, "\n")
+# part1 = solve(raw, size = decksize, times = 1, target = 2939)
+# print("\nVerify part 1, should be 2019, is:", part1, "\n")
 
 # Not 117599454398659
+# Not 107116967390935 (assuming a recurrance size of 3828, part 2 would be 2221 shuffles in)
 part2 = solve(raw, size = decksize, times = shuffles, target = 2020)
 print("Solution:", part2)
