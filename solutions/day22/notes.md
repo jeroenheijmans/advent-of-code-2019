@@ -39,6 +39,26 @@ Some assumptions so far:
 - Brute force won't work in any feasible way, perhaps not even if the entire shuffle becomes just 1 operation
 - The "right" solution will run in under 10 seconds, likely in a lot less than 1 second
 
+## Current Direction
+
+Suppose a deck of size `N`, where N is a prime over `1e5`.
+After `i` shuffles the card in position `0` is again in position `0`.
+There seems to be a formula:
+
+```none
+(N-1) = ? * i
+```
+
+Where `?` seems to be a positive integer number.
+
+For `N` between `1e5` and `2e5` the `?` is one of `[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 28, 29, 30, 33, 34, 35, 36, 38, 39, 40, 42, 43, 44, 46, 48, 49, 50, 52, 53, 56, 60, 62, 64, 66, 68, 70, 71, 74, 75, 77, 81, 82, 84, 85, 86, 88, 89, 90, 91, 96, 103, 106, 111, 128, 132, 136, 144, 146, 168, 176, 193, 194, 212, 232, 244, 248, 260, 262, 274, 278, 450, 477, 1042, 3828]`. There seems to be no logic behind that series.
+
+If we plot `i` versus `N` there _is_ a clear pattern emerging:
+
+![Pattern](pattern-seeking-002.png)
+
+But where to go from here?
+
 ## Final notes
 
 Hoping to stay spoiler-free _and_ be able to solve this on my own.
