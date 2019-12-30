@@ -62,7 +62,14 @@ Here's a plot of the first 15k cards from the "factory order" deck, and what pos
 
 ![Pattern](pattern-seeking-003.png)
 
-But where to go from here?
+This seems to be on to something.
+A shuffle creates "gaps" between cards of certain size.
+The gap is constant between consecutive cards.
+
+E.g. suppose a deck with cards `0, 1, 2, 3, ...`.
+After one complete shuffle (puzzle input) the number of cards _between_ `0` and `1` will be equal to the number of cards between `1` and `2`, and so on.
+
+Now to see how this can be used to calculate the final answer...
 
 ## Final notes
 
