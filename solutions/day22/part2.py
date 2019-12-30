@@ -58,5 +58,6 @@ shuffles = 101_741_582_076_661 # Prime number :D
 # Not 100578495860738 (first guess after using apparent increases of 74911153708239)
 # Not 56173932054930 (second guess after trying to correct parts of the answer)
 # Not 40620801226632 (third guess after trying to tweak the actual calculation in mild despair)
+# Not 40620801228652 (fourth guess ... as expected :P)
 part2 = solve(raw, size = decksize, times = shuffles, target = 2020)
 print("Solution:", part2)
