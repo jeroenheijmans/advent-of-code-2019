@@ -44,6 +44,12 @@ def solve(data, size, times, target):
   
   stepsize = diffs[0]
 
+  position = target
+
+  for i in range(times, size):
+    if i % 1e6 == 0: print(i)
+    position = (basenr + (position * stepsize)) % size
+
   # Basic algorithm:
   #
   # card0atstep3 = (
@@ -52,8 +58,6 @@ def solve(data, size, times, target):
   #   (basenr * stepsize ^ 2) + 
   #   (target * stepsize ^ 3)
   # ) % size
-
-  position = None # TODO
 
   return position
 
