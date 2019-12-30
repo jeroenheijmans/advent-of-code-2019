@@ -36,13 +36,24 @@ def solve(data, size, times, target):
   assert diffs[0] == diffs[1]
   assert diffs[1] == diffs[2]
 
+  basenr = 0
+  for op in program:
+    if op[0] == 1: basenr = reverse(basenr, size)
+    elif op[0] == 2: basenr = increment(basenr, size, op[1])
+    elif op[0] == 3: basenr = cut(basenr, size, op[1])
+  
   stepsize = diffs[0]
 
-  # So "careful not to overflow" was the actual hint that would make this
-  # operation harder, when in Python one does not overflow, I guess!?
-  position = (target + (stepsize * (decksize - times))) % decksize
+  # Basic algorithm:
+  #
+  # card0atstep3 = (
+  #   (basenr * stepsize ^ 0) + 
+  #   (basenr * stepsize ^ 1) + 
+  #   (basenr * stepsize ^ 2) + 
+  #   (target * stepsize ^ 3)
+  # ) % size
 
-  print("THIS IS LIKELY NOT YET THE ANSWER, WE STILL NEED TO PIVOTTTT THE SOLUTION!")
+  position = None # TODO
 
   return position
 
