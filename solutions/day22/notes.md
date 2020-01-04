@@ -2,6 +2,61 @@
 
 Some notes about part 2 specifically, hoping that writing them down helps me find a solution.
 
+## Main Direction
+
+Part 1 I solved by shuffling the _entire_ deck.
+Since then, the algorithm was updated to track the position of an individual card.
+
+## Overall remarks
+
+From earlier experiments I found that a deck _seems_ guaranteed to return to its initial state after shuffling it a number of times equal to the deck size.
+So if we start at `101741582076661` with the card at position `2020` and would keep applying shuffles until we've shuffled `119315717514047` times (deck size), that card's position is the answer.
+
+Note: This means "shuffling backwards" and the associated hard multiplicative inverse modulus operations (which I created in earlier iterations) _are not needed_.
+
+Still, shuffling `119_315_717_514_047 - 101_741_582_076_661 = 17_574_135_437_386` (17 trillion) times is still too much to brute force.
+
+In short, the deck size and shuffle count are too large to brute force a solution.
+There _must_ be a way to calculate or predict the answer.
+
+## Patterns
+
+I'm assuming applying the entire puzzle input _once_ can be regarded as a single operation.
+The answer to this puzzle then comes down to describing "one shuffle" as a formula.
+
+To reverse engineer what this formula is, let's look at some data.
+Here's how three cards' positions "behave" after applying the shuffle input a few times:
+
+| Shuffles  | Card A           | Card B            | Card C
+|-----------|------------------|-------------------|------------------
+| `0`       | `2020`           | `2021`            | `2022`
+| `1`       | `53708441259373` | `72579355833069`  | `91450270406765`
+| `2`       | `72825280824201` | `7351535176970`   | `61193507043786`
+| `3`       | `51981859576157` | `16056288323740`  | `99446434585370`
+| `4`       | `2601792650713`  | `13140375499261`  | `23678958347809`
+| `5`       | `37207709830680` | `97073821055459`  | `37624214766191`
+| `6`       | `79547387749418` | `85223597213898`  | `90899806678378`
+| `7`       | `68704256107432` | `41291127492490`  | `13877998877548`
+| `8`       | `17529966139841` | `119117971509863` | `101390259365838`
+
+There is no apparent pattern at first sight in how a _single_ card's position changes.
+The number or positions it changes relatively shows no direct formula.
+
+There _is_ a pattern between multiple cards though.
+For example, the distance between card `A` and `B` is always the same as the distance between `B` and `C` (accounting for "wrap around" at the end of the deck).
+So in a formula:
+
+```none
+(A - B + DeckSize) % DeckSize == (B - C + DeckSize) % DeckSize
+```
+
+This is where I'm currently stuck: how to utilize this to get the answer?
+I've been able to distill some numeric algorithm to calculate the "next" position of a card after one full shuffle as a single mathematical operation, but that's still too expensive to brute force...
+
+----
+
+Here are some of the older notes, some of which may still be relevant.
+
 ## General remarks
 
 - The deck size and number of shuffles are both (largeish) prime numbers (crypto?)
@@ -39,7 +94,7 @@ Some assumptions so far:
 - Brute force won't work in any feasible way, perhaps not even if the entire shuffle becomes just 1 operation
 - The "right" solution will run in under 10 seconds, likely in a lot less than 1 second
 
-## Current Direction
+## Initial Direction
 
 Suppose a deck of size `N`, where N is a prime over `1e5`.
 After `i` shuffles the card in position `0` is again in position `0`.
