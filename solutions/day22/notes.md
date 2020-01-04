@@ -41,6 +41,9 @@ Here's how three cards' positions "behave" after applying the shuffle input a fe
 
 There is no apparent pattern at first sight in how a _single_ card's position changes.
 The number or positions it changes relatively shows no direct formula.
+Here's a graph showing the "Diff from previous position" after one full shuffle:
+
+![Pattern](pattern-seeking-004.png)
 
 There _is_ a pattern between multiple cards though.
 For example, the distance between card `A` and `B` is always the same as the distance between `B` and `C` (accounting for "wrap around" at the end of the deck).
