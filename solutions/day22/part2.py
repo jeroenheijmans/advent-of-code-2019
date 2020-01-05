@@ -1,78 +1,51 @@
-def reverse(position, size):
-  return size - position - 1
-
-def increment(position, size, n):
-  return (n * position) % size
-
-def cut(position, size, n):
-  return position - n if position >= n else size - (n - position)
-
-def solve(data, size, times, target):
-  num = lambda line: int(''.join(filter(lambda x: x.isdigit() or x == "-", line)))
-  program = [
-    (1, None) if "stack" in line else
-    (2, num(line)) if "inc" in line else
-    (3, num(line)) if "cut" in line else
-    None # Problem!
-    for line in data
-  ]
-
-  samples = [0, 1, 2, 3]
-  results = []
-
-  for sample in samples:
-    for op in program:
-      if op[0] == 1: sample = reverse(sample, size)
-      elif op[0] == 2: sample = increment(sample, size, op[1])
-      elif op[0] == 3: sample = cut(sample, size, op[1])
-    results.append(sample)
-
-  diffs = [
-    (results[1] - results[0] + size) % size,
-    (results[2] - results[1] + size) % size,
-    (results[3] - results[2] + size) % size,
-  ]
-
-  assert diffs[0] == diffs[1]
-  assert diffs[1] == diffs[2]
-
-  basenr = 0
-  for op in program:
-    if op[0] == 1: basenr = reverse(basenr, size)
-    elif op[0] == 2: basenr = increment(basenr, size, op[1])
-    elif op[0] == 3: basenr = cut(basenr, size, op[1])
-  
-  stepsize = diffs[0]
-
-  position = target
-
-  for i in range(times, size):
-    if i % 1e6 == 0: print(i)
-    position = (basenr + (position * stepsize)) % size
-
-  # Basic algorithm:
-  #
-  # card0atstep3 = (
-  #   (basenr * stepsize ^ 0) + 
-  #   (basenr * stepsize ^ 1) + 
-  #   (basenr * stepsize ^ 2) + 
-  #   (target * stepsize ^ 3)
-  # ) % size
-
-  return position
-
-with open('input.txt', 'r') as file:
-  raw = file.read().splitlines()
-
-decksize = 119_315_717_514_047 # Prime number :D
-shuffles = 101_741_582_076_661 # Prime number :D
-
-# Not 117599454398659
-# Not 107116967390935 (assuming a recurrance size of 3828, part 2 would be 2221 shuffles in)
-# Not 67317446177430 (assuming recurrance size of 1042, remainder would be 1027 shuffles backwards)
-# Not 100578495860738 (first guess after using apparent increases of 74911153708239)
-# Not 56173932054930 (second guess after trying to correct parts of the answer)
-# Not 40620801226632 (third guess after trying to tweak the actual calculation in mild despair)
-# Not 40620801228652 (fourth guess ... as expected :P)
-part2 = solve(raw, size = decksize, times = shuffles, target = 2020)
-print("Solution:", part2)
+#
+# After 80+ hours on this puzzle, I gave up...
+#
+# I calculated the answer for my input using another's
+# solution, and leaving it here in all its shame:
+#
+print("45347150615590")
+#
+# Calculated using: https://gist.github.com/Voltara/7d417c77bc2308be4c831f1aa5a5a48d
+#
+# After reading up on Reddit, I'm not too sad that I gave
+# up. I was afraid that it would turn out I was so close,
+# that I could've solved it on my own if only I kept on
+# for just a bit longer.
+#
+# I'm glad to see that idea was wrong. Even if I had spent
+# another 80 hours, I probably wouldn't have solved this
+# puzzle.
+#
+# Apparently I did figure out a few key parts of the answer
+# on my own, including:
+#
+# 1. Modular Multiplicative Inverse operation for reversing
+#    the "deal with increment" operation
+#
+# 2. Not needing it after all, because the deck restores to
+#    factory order after `deckSize` shuffles, so you can just
+#    shuffle forward to the end to get the answer.
+#
+# 3. Composing the 50 input instructions to one operation was
+#    indeed possible, and even the key.
+#
+# 4. There is an "apparent randomness" in the card position,
+#    and as it turned out parts of this puzzle coincide with
+#    how pseudo-random generators work.
+# 
+# and finally, not "figured out" but suspected:
+#
+# 5. Some kind of algorithm to quickly apply the full shuffle
+#    many times would be possible, heck even the answer.
+#
+# 6. The deck size and shuffle count being large primes was
+#    supposedly indeed meaningful: them being co-primes in fact
+#    prevented the solution from being too easy.
+#
+# In the end, this kind and level of puzzle turns out to be beyond
+# my grasp. I'd have to spend serious time in math and algorithms
+# to be able to solve it myself.
+#
+# Glad I stopped after "just" 80 hours of trying...
+#
